@@ -7,6 +7,8 @@
   ],
   "scripts": {
     "build": "tsc -b packages/core packages/render packages/convert packages/convert-pdf-epub packages/convert-office packages/convert-all packages/viewer && node tools/build-render-worker.mjs",
+    "build:vscode": "node packages/vscode/build.mjs",
+    "package:vscode": "npm run build && node packages/vscode/build.mjs && cd packages/vscode && npx @vscode/vsce package --no-dependencies --skip-license",
     "build:wasm": "node tools/build-npm-converters.mjs",
     "size:npm": "node tools/measure-npm-sizes.mjs",
     "test:npm-browser": "node test/npm-browser.mjs",

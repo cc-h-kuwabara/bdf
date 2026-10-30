@@ -1,0 +1,3707 @@
+{
+  "name": "bdf-preview",
+  "displayName": "BDF Document Preview",
+  "description": "Preview documents, drawings, CAD, music, audio, fonts, and data (Office, PDF, CAD, KiCad, Gerber, etc.) with BDF in VS Code",
+  "version": "0.1.8",
+  "publisher": "bdf",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shibukawa/bdf"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "bdf",
+    "preview",
+    "viewer",
+    "pdf",
+    "word",
+    "excel",
+    "powerpoint",
+    "cad",
+    "dxf",
+    "kicad",
+    "gerber",
+    "musicxml",
+    "midi"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@bdfkit/core": "0.2.1",
+    "@bdfkit/render": "0.2.1",
+    "@bdfkit/viewer": "0.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.0.0"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "bdf.openPreview",
+        "title": "BDF: Open Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "bdf.openPreviewToSide",
+        "title": "BDF: Open Preview to the Side",
+        "icon": "$(split-horizontal)"
+      },
+      {
+        "command": "bdf.configureAssociations",
+        "title": "BDF: Configure Default File Associations",
+        "icon": "$(gear)"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "bdf.previewEditor",
+        "displayName": "BDF Document Preview",
+        "priority": "option",
+        "selector": [
+          {
+            "filenamePattern": "*.xlsx"
+          },
+          {
+            "filenamePattern": "*.xlsm"
+          },
+          {
+            "filenamePattern": "*.xltx"
+          },
+          {
+            "filenamePattern": "*.xltm"
+          },
+          {
+            "filenamePattern": "*.docx"
+          },
+          {
+            "filenamePattern": "*.docm"
+          },
+          {
+            "filenamePattern": "*.dotx"
+          },
+          {
+            "filenamePattern": "*.dotm"
+          },
+          {
+            "filenamePattern": "*.pptx"
+          },
+          {
+            "filenamePattern": "*.pptm"
+          },
+          {
+            "filenamePattern": "*.ppsx"
+          },
+          {
+            "filenamePattern": "*.ppsm"
+          },
+          {
+            "filenamePattern": "*.potx"
+          },
+          {
+            "filenamePattern": "*.potm"
+          },
+          {
+            "filenamePattern": "*.vsdx"
+          },
+          {
+            "filenamePattern": "*.vsdm"
+          },
+          {
+            "filenamePattern": "*.vstx"
+          },
+          {
+            "filenamePattern": "*.vstm"
+          },
+          {
+            "filenamePattern": "*.bdf"
+          },
+          {
+            "filenamePattern": "*.bdft"
+          },
+          {
+            "filenamePattern": "*.pdf"
+          },
+          {
+            "filenamePattern": "*.epub"
+          },
+          {
+            "filenamePattern": "*.html"
+          },
+          {
+            "filenamePattern": "*.htm"
+          },
+          {
+            "filenamePattern": "*.xhtml"
+          },
+          {
+            "filenamePattern": "*.mhtml"
+          },
+          {
+            "filenamePattern": "*.mht"
+          },
+          {
+            "filenamePattern": "*.md"
+          },
+          {
+            "filenamePattern": "*.markdown"
+          },
+          {
+            "filenamePattern": "*.mdown"
+          },
+          {
+            "filenamePattern": "*.mkd"
+          },
+          {
+            "filenamePattern": "*.mdx"
+          },
+          {
+            "filenamePattern": "*.csv"
+          },
+          {
+            "filenamePattern": "*.tsv"
+          },
+          {
+            "filenamePattern": "*.tab"
+          },
+          {
+            "filenamePattern": "*.parquet"
+          },
+          {
+            "filenamePattern": "*.parq"
+          },
+          {
+            "filenamePattern": "*.pqt"
+          },
+          {
+            "filenamePattern": "*.ai"
+          },
+          {
+            "filenamePattern": "*.psd"
+          },
+          {
+            "filenamePattern": "*.psb"
+          },
+          {
+            "filenamePattern": "*.idml"
+          },
+          {
+            "filenamePattern": "*.drawio"
+          },
+          {
+            "filenamePattern": "*.dio"
+          },
+          {
+            "filenamePattern": "*.emf"
+          },
+          {
+            "filenamePattern": "*.wmf"
+          },
+          {
+            "filenamePattern": "*.dxf"
+          },
+          {
+            "filenamePattern": "*.jww"
+          },
+          {
+            "filenamePattern": "*.sxf"
+          },
+          {
+            "filenamePattern": "*.p21"
+          },
+          {
+            "filenamePattern": "*.p2z"
+          },
+          {
+            "filenamePattern": "*.sfc"
+          },
+          {
+            "filenamePattern": "*.cgm"
+          },
+          {
+            "filenamePattern": "*.cgz"
+          },
+          {
+            "filenamePattern": "*.plt"
+          },
+          {
+            "filenamePattern": "*.hpgl"
+          },
+          {
+            "filenamePattern": "*.hgl"
+          },
+          {
+            "filenamePattern": "*.hpg"
+          },
+          {
+            "filenamePattern": "*.hp2"
+          },
+          {
+            "filenamePattern": "*.rtl"
+          },
+          {
+            "filenamePattern": "*.kicad_sch"
+          },
+          {
+            "filenamePattern": "*.kicad_pcb"
+          },
+          {
+            "filenamePattern": "*.kicad_pro"
+          },
+          {
+            "filenamePattern": "*.gbr"
+          },
+          {
+            "filenamePattern": "*.ger"
+          },
+          {
+            "filenamePattern": "*.gtl"
+          },
+          {
+            "filenamePattern": "*.gbl"
+          },
+          {
+            "filenamePattern": "*.gto"
+          },
+          {
+            "filenamePattern": "*.gbo"
+          },
+          {
+            "filenamePattern": "*.gts"
+          },
+          {
+            "filenamePattern": "*.gbs"
+          },
+          {
+            "filenamePattern": "*.gtp"
+          },
+          {
+            "filenamePattern": "*.gbp"
+          },
+          {
+            "filenamePattern": "*.gko"
+          },
+          {
+            "filenamePattern": "*.gml"
+          },
+          {
+            "filenamePattern": "*.gm1"
+          },
+          {
+            "filenamePattern": "*.g1"
+          },
+          {
+            "filenamePattern": "*.g2"
+          },
+          {
+            "filenamePattern": "*.g3"
+          },
+          {
+            "filenamePattern": "*.g4"
+          },
+          {
+            "filenamePattern": "*.gp1"
+          },
+          {
+            "filenamePattern": "*.gp2"
+          },
+          {
+            "filenamePattern": "*.pho"
+          },
+          {
+            "filenamePattern": "*.art"
+          },
+          {
+            "filenamePattern": "*.cmp"
+          },
+          {
+            "filenamePattern": "*.sol"
+          },
+          {
+            "filenamePattern": "*.plc"
+          },
+          {
+            "filenamePattern": "*.pls"
+          },
+          {
+            "filenamePattern": "*.stc"
+          },
+          {
+            "filenamePattern": "*.sts"
+          },
+          {
+            "filenamePattern": "*.crc"
+          },
+          {
+            "filenamePattern": "*.crs"
+          },
+          {
+            "filenamePattern": "*.drl"
+          },
+          {
+            "filenamePattern": "*.drd"
+          },
+          {
+            "filenamePattern": "*.xln"
+          },
+          {
+            "filenamePattern": "*.exc"
+          },
+          {
+            "filenamePattern": "*.zip"
+          },
+          {
+            "filenamePattern": "*.tif"
+          },
+          {
+            "filenamePattern": "*.tiff"
+          },
+          {
+            "filenamePattern": "*.png"
+          },
+          {
+            "filenamePattern": "*.apng"
+          },
+          {
+            "filenamePattern": "*.jpg"
+          },
+          {
+            "filenamePattern": "*.jpeg"
+          },
+          {
+            "filenamePattern": "*.jpe"
+          },
+          {
+            "filenamePattern": "*.jfif"
+          },
+          {
+            "filenamePattern": "*.gif"
+          },
+          {
+            "filenamePattern": "*.webp"
+          },
+          {
+            "filenamePattern": "*.avif"
+          },
+          {
+            "filenamePattern": "*.bmp"
+          },
+          {
+            "filenamePattern": "*.ico"
+          },
+          {
+            "filenamePattern": "*.svg"
+          },
+          {
+            "filenamePattern": "*.musicxml"
+          },
+          {
+            "filenamePattern": "*.mxl"
+          },
+          {
+            "filenamePattern": "*.mid"
+          },
+          {
+            "filenamePattern": "*.midi"
+          },
+          {
+            "filenamePattern": "*.smf"
+          },
+          {
+            "filenamePattern": "*.kar"
+          },
+          {
+            "filenamePattern": "*.rmi"
+          },
+          {
+            "filenamePattern": "*.mml"
+          },
+          {
+            "filenamePattern": "*.mp3"
+          },
+          {
+            "filenamePattern": "*.m4a"
+          },
+          {
+            "filenamePattern": "*.m4b"
+          },
+          {
+            "filenamePattern": "*.m4p"
+          },
+          {
+            "filenamePattern": "*.aac"
+          },
+          {
+            "filenamePattern": "*.flac"
+          },
+          {
+            "filenamePattern": "*.ogg"
+          },
+          {
+            "filenamePattern": "*.oga"
+          },
+          {
+            "filenamePattern": "*.opus"
+          },
+          {
+            "filenamePattern": "*.spx"
+          },
+          {
+            "filenamePattern": "*.wav"
+          },
+          {
+            "filenamePattern": "*.wave"
+          },
+          {
+            "filenamePattern": "*.aif"
+          },
+          {
+            "filenamePattern": "*.aiff"
+          },
+          {
+            "filenamePattern": "*.aifc"
+          },
+          {
+            "filenamePattern": "*.ttf"
+          },
+          {
+            "filenamePattern": "*.otf"
+          },
+          {
+            "filenamePattern": "*.ttc"
+          },
+          {
+            "filenamePattern": "*.otc"
+          },
+          {
+            "filenamePattern": "*.woff"
+          },
+          {
+            "filenamePattern": "*.woff2"
+          }
+        ]
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "bdf.openPreviewToSide",
+          "group": "navigation",
+          "when": "resourceExtname =~ /\\.(xlsx|xlsm|xltx|xltm|docx|docm|dotx|dotm|pptx|pptm|ppsx|ppsm|potx|potm|vsdx|vsdm|vstx|vstm|bdf|bdft|pdf|epub|html|htm|xhtml|mhtml|mht|md|markdown|mdown|mkd|mdx|csv|tsv|tab|parquet|parq|pqt|ai|psd|psb|idml|drawio|dio|emf|wmf|dxf|jww|sxf|p21|p2z|sfc|cgm|cgz|plt|hpgl|hgl|hpg|hp2|rtl|kicad_sch|kicad_pcb|kicad_pro|gbr|ger|gtl|gbl|gto|gbo|gts|gbs|gtp|gbp|gko|gml|gm1|g1|g2|g3|g4|gp1|gp2|pho|art|cmp|sol|plc|pls|stc|sts|crc|crs|drl|drd|xln|exc|zip|tif|tiff|png|apng|jpg|jpeg|jpe|jfif|gif|webp|avif|bmp|ico|svg|musicxml|mxl|mid|midi|smf|kar|rmi|mml|mp3|m4a|m4b|m4p|aac|flac|ogg|oga|opus|spx|wav|wave|aif|aiff|aifc|ttf|otf|ttc|otc|woff|woff2)$/i"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "bdf.openPreview",
+          "group": "navigation",
+          "when": "resourceExtname =~ /\\.(xlsx|xlsm|xltx|xltm|docx|docm|dotx|dotm|pptx|pptm|ppsx|ppsm|potx|potm|vsdx|vsdm|vstx|vstm|bdf|bdft|pdf|epub|html|htm|xhtml|mhtml|mht|md|markdown|mdown|mkd|mdx|csv|tsv|tab|parquet|parq|pqt|ai|psd|psb|idml|drawio|dio|emf|wmf|dxf|jww|sxf|p21|p2z|sfc|cgm|cgz|plt|hpgl|hgl|hpg|hp2|rtl|kicad_sch|kicad_pcb|kicad_pro|gbr|ger|gtl|gbl|gto|gbo|gts|gbs|gtp|gbp|gko|gml|gm1|g1|g2|g3|g4|gp1|gp2|pho|art|cmp|sol|plc|pls|stc|sts|crc|crs|drl|drd|xln|exc|zip|tif|tiff|png|apng|jpg|jpeg|jpe|jfif|gif|webp|avif|bmp|ico|svg|musicxml|mxl|mid|midi|smf|kar|rmi|mml|mp3|m4a|m4b|m4p|aac|flac|ogg|oga|opus|spx|wav|wave|aif|aiff|aifc|ttf|otf|ttc|otc|woff|woff2)$/i"
+        }
+      ]
+    },
+    "configuration": [
+      {
+        "id": "bdf.general",
+        "title": "01. General",
+        "order": 1,
+        "properties": {
+          "bdf.bdfBinaryPath": {
+            "type": "string",
+            "default": "",
+            "description": "Path to the bdf CLI binary (leave empty to auto-detect or use the bundled binary).",
+            "order": 1
+          },
+          "bdf.defaultLayout": {
+            "type": "string",
+            "enum": [
+              "single",
+              "spread",
+              "continuous"
+            ],
+            "enumDescriptions": [
+              "Single page layout",
+              "Two-page spread layout",
+              "Continuous vertical scrolling layout"
+            ],
+            "default": "single",
+            "description": "Default page layout mode (single, spread, or continuous).",
+            "order": 2
+          },
+          "bdf.defaultZoom": {
+            "type": "number",
+            "default": 1,
+            "description": "Default zoom scale (1.0 = 100%).",
+            "order": 3
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.office",
+        "title": "02. Office Documents (Excel / Word / PowerPoint / Visio)",
+        "order": 2,
+        "properties": {
+          "bdf.preview.office.xlsx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.xlsx` (Microsoft Excel Workbook (.xlsx)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.office.xlsx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.xlsx` (Microsoft Excel Workbook (.xlsx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.office.xlsm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.xlsm` (Microsoft Excel Macro-Enabled Workbook (.xlsm)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.office.xlsm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.xlsm` (Microsoft Excel Macro-Enabled Workbook (.xlsm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.office.xltx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.xltx` (Microsoft Excel Template (.xltx)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.office.xltx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.xltx` (Microsoft Excel Template (.xltx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.office.xltm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.xltm` (Microsoft Excel Macro-Enabled Template (.xltm)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.office.xltm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.xltm` (Microsoft Excel Macro-Enabled Template (.xltm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.office.docx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.docx` (Microsoft Word Document (.docx)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.office.docx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.docx` (Microsoft Word Document (.docx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.office.docm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.docm` (Microsoft Word Macro-Enabled Document (.docm)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.office.docm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.docm` (Microsoft Word Macro-Enabled Document (.docm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.office.dotx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.dotx` (Microsoft Word Template (.dotx)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.office.dotx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.dotx` (Microsoft Word Template (.dotx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.office.dotm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.dotm` (Microsoft Word Macro-Enabled Template (.dotm)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.office.dotm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.dotm` (Microsoft Word Macro-Enabled Template (.dotm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          },
+          "bdf.preview.office.pptx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.pptx` (Microsoft PowerPoint Presentation (.pptx)) with BDF Document Preview.",
+            "order": 17
+          },
+          "bdf.theme.office.pptx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.pptx` (Microsoft PowerPoint Presentation (.pptx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 18
+          },
+          "bdf.preview.office.pptm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.pptm` (Microsoft PowerPoint Macro-Enabled Presentation (.pptm)) with BDF Document Preview.",
+            "order": 19
+          },
+          "bdf.theme.office.pptm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.pptm` (Microsoft PowerPoint Macro-Enabled Presentation (.pptm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 20
+          },
+          "bdf.preview.office.ppsx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.ppsx` (Microsoft PowerPoint Slide Show (.ppsx)) with BDF Document Preview.",
+            "order": 21
+          },
+          "bdf.theme.office.ppsx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.ppsx` (Microsoft PowerPoint Slide Show (.ppsx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 22
+          },
+          "bdf.preview.office.ppsm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.ppsm` (Microsoft PowerPoint Macro-Enabled Slide Show (.ppsm)) with BDF Document Preview.",
+            "order": 23
+          },
+          "bdf.theme.office.ppsm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.ppsm` (Microsoft PowerPoint Macro-Enabled Slide Show (.ppsm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 24
+          },
+          "bdf.preview.office.potx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.potx` (Microsoft PowerPoint Template (.potx)) with BDF Document Preview.",
+            "order": 25
+          },
+          "bdf.theme.office.potx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.potx` (Microsoft PowerPoint Template (.potx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 26
+          },
+          "bdf.preview.office.potm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.potm` (Microsoft PowerPoint Macro-Enabled Template (.potm)) with BDF Document Preview.",
+            "order": 27
+          },
+          "bdf.theme.office.potm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.potm` (Microsoft PowerPoint Macro-Enabled Template (.potm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 28
+          },
+          "bdf.preview.office.vsdx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.vsdx` (Microsoft Visio Drawing (.vsdx)) with BDF Document Preview.",
+            "order": 29
+          },
+          "bdf.theme.office.vsdx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.vsdx` (Microsoft Visio Drawing (.vsdx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 30
+          },
+          "bdf.preview.office.vsdm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.vsdm` (Microsoft Visio Macro-Enabled Drawing (.vsdm)) with BDF Document Preview.",
+            "order": 31
+          },
+          "bdf.theme.office.vsdm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.vsdm` (Microsoft Visio Macro-Enabled Drawing (.vsdm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 32
+          },
+          "bdf.preview.office.vstx": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.vstx` (Microsoft Visio Template (.vstx)) with BDF Document Preview.",
+            "order": 33
+          },
+          "bdf.theme.office.vstx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.vstx` (Microsoft Visio Template (.vstx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 34
+          },
+          "bdf.preview.office.vstm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Automatically open `*.vstm` (Microsoft Visio Macro-Enabled Template (.vstm)) with BDF Document Preview.",
+            "order": 35
+          },
+          "bdf.theme.office.vstm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Office Documents (Excel / Word / PowerPoint / Visio)]** Preview theme for `*.vstm` (Microsoft Visio Macro-Enabled Template (.vstm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 36
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.document",
+        "title": "03. Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)",
+        "order": 3,
+        "properties": {
+          "bdf.preview.document.bdf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.bdf` (BDF Document (.bdf)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.document.bdf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.bdf` (BDF Document (.bdf)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.document.bdft": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.bdft` (BDF Compiled Form Template (.bdft)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.document.bdft": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.bdft` (BDF Compiled Form Template (.bdft)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.document.pdf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.pdf` (PDF Document (.pdf)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.document.pdf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.pdf` (PDF Document (.pdf)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.document.epub": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.epub` (EPUB Publication (.epub)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.document.epub": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.epub` (EPUB Publication (.epub)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.document.html": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.html` (HTML Document in Reader Mode (.html)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.document.html": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.html` (HTML Document in Reader Mode (.html)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.document.htm": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.htm` (HTML Document in Reader Mode (.htm)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.document.htm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.htm` (HTML Document in Reader Mode (.htm)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.document.xhtml": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.xhtml` (XHTML Document in Reader Mode (.xhtml)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.document.xhtml": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.xhtml` (XHTML Document in Reader Mode (.xhtml)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.document.mhtml": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.mhtml` (MHTML Web Archive (.mhtml)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.document.mhtml": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.mhtml` (MHTML Web Archive (.mhtml)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          },
+          "bdf.preview.document.mht": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.mht` (MHT Web Archive (.mht)) with BDF Document Preview.",
+            "order": 17
+          },
+          "bdf.theme.document.mht": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.mht` (MHT Web Archive (.mht)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 18
+          },
+          "bdf.preview.document.md": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.md` (Markdown Document in Reader Mode (.md)) with BDF Document Preview.",
+            "order": 19
+          },
+          "bdf.theme.document.md": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.md` (Markdown Document in Reader Mode (.md)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 20
+          },
+          "bdf.preview.document.markdown": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.markdown` (Markdown Document in Reader Mode (.markdown)) with BDF Document Preview.",
+            "order": 21
+          },
+          "bdf.theme.document.markdown": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.markdown` (Markdown Document in Reader Mode (.markdown)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 22
+          },
+          "bdf.preview.document.mdown": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.mdown` (Markdown Document in Reader Mode (.mdown)) with BDF Document Preview.",
+            "order": 23
+          },
+          "bdf.theme.document.mdown": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.mdown` (Markdown Document in Reader Mode (.mdown)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 24
+          },
+          "bdf.preview.document.mkd": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.mkd` (Markdown Document in Reader Mode (.mkd)) with BDF Document Preview.",
+            "order": 25
+          },
+          "bdf.theme.document.mkd": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.mkd` (Markdown Document in Reader Mode (.mkd)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 26
+          },
+          "bdf.preview.document.mdx": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Automatically open `*.mdx` (MDX Document in Reader Mode (.mdx)) with BDF Document Preview.",
+            "order": 27
+          },
+          "bdf.theme.document.mdx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Documents, eBooks & Web (BDF / PDF / EPUB / HTML / Markdown)]** Preview theme for `*.mdx` (MDX Document in Reader Mode (.mdx)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 28
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.data",
+        "title": "04. Data & Tables (CSV / TSV / Parquet)",
+        "order": 4,
+        "properties": {
+          "bdf.preview.data.csv": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Automatically open `*.csv` (Comma-Separated Values (.csv)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.data.csv": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Preview theme for `*.csv` (Comma-Separated Values (.csv)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.data.tsv": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Automatically open `*.tsv` (Tab-Separated Values (.tsv)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.data.tsv": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Preview theme for `*.tsv` (Tab-Separated Values (.tsv)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.data.tab": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Automatically open `*.tab` (Tab-Separated Values (.tab)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.data.tab": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Preview theme for `*.tab` (Tab-Separated Values (.tab)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.data.parquet": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Automatically open `*.parquet` (Apache Parquet Columnar Data (.parquet)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.data.parquet": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Preview theme for `*.parquet` (Apache Parquet Columnar Data (.parquet)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.data.parq": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Automatically open `*.parq` (Apache Parquet Columnar Data (.parq)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.data.parq": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Preview theme for `*.parq` (Apache Parquet Columnar Data (.parq)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.data.pqt": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Automatically open `*.pqt` (Apache Parquet Columnar Data (.pqt)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.data.pqt": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Data & Tables (CSV / TSV / Parquet)]** Preview theme for `*.pqt` (Apache Parquet Columnar Data (.pqt)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 12
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.design",
+        "title": "05. Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)",
+        "order": 5,
+        "properties": {
+          "bdf.preview.design.ai": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.ai` (Adobe Illustrator Artwork (.ai)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.design.ai": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.ai` (Adobe Illustrator Artwork (.ai)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.design.psd": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.psd` (Adobe Photoshop Document (.psd)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.design.psd": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.psd` (Adobe Photoshop Document (.psd)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.design.psb": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.psb` (Adobe Photoshop Large Document (.psb)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.design.psb": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.psb` (Adobe Photoshop Large Document (.psb)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.design.idml": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.idml` (Adobe InDesign Markup Document (.idml)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.design.idml": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.idml` (Adobe InDesign Markup Document (.idml)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.design.drawio": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.drawio` (draw.io Diagram (.drawio)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.design.drawio": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.drawio` (draw.io Diagram (.drawio)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.design.dio": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.dio` (draw.io Diagram (.dio)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.design.dio": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.dio` (draw.io Diagram (.dio)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.design.emf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.emf` (Windows Enhanced Metafile (.emf)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.design.emf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.emf` (Windows Enhanced Metafile (.emf)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.design.wmf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Automatically open `*.wmf` (Windows Metafile (.wmf)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.design.wmf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Design, DTP & Diagrams (Illustrator / Photoshop / InDesign / draw.io / EMF)]** Preview theme for `*.wmf` (Windows Metafile (.wmf)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.cad",
+        "title": "06. CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)",
+        "order": 6,
+        "properties": {
+          "bdf.preview.cad.dxf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.dxf` (AutoCAD DXF Drawing (.dxf)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.cad.dxf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.dxf` (AutoCAD DXF Drawing (.dxf)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.cad.jww": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.jww` (Jw_cad Drawing (.jww)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.cad.jww": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.jww` (Jw_cad Drawing (.jww)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.cad.sxf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.sxf` (SXF CAD Drawing (.sxf)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.cad.sxf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.sxf` (SXF CAD Drawing (.sxf)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.cad.p21": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.p21` (SXF P21 CAD Drawing (.p21)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.cad.p21": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.p21` (SXF P21 CAD Drawing (.p21)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.cad.p2z": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.p2z` (SXF P2Z Compressed CAD Drawing (.p2z)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.cad.p2z": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.p2z` (SXF P2Z Compressed CAD Drawing (.p2z)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.cad.sfc": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.sfc` (SXF SFC CAD Drawing (.sfc)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.cad.sfc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.sfc` (SXF SFC CAD Drawing (.sfc)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.cad.cgm": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.cgm` (Computer Graphics Metafile (.cgm)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.cad.cgm": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.cgm` (Computer Graphics Metafile (.cgm)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.cad.cgz": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.cgz` (Compressed Computer Graphics Metafile (.cgz)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.cad.cgz": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.cgz` (Compressed Computer Graphics Metafile (.cgz)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          },
+          "bdf.preview.cad.plt": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.plt` (HP-GL/2 Plotter File (.plt)) with BDF Document Preview.",
+            "order": 17
+          },
+          "bdf.theme.cad.plt": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.plt` (HP-GL/2 Plotter File (.plt)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 18
+          },
+          "bdf.preview.cad.hpgl": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.hpgl` (HP-GL/2 Plotter File (.hpgl)) with BDF Document Preview.",
+            "order": 19
+          },
+          "bdf.theme.cad.hpgl": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.hpgl` (HP-GL/2 Plotter File (.hpgl)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 20
+          },
+          "bdf.preview.cad.hgl": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.hgl` (HP-GL Plotter File (.hgl)) with BDF Document Preview.",
+            "order": 21
+          },
+          "bdf.theme.cad.hgl": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.hgl` (HP-GL Plotter File (.hgl)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 22
+          },
+          "bdf.preview.cad.hpg": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.hpg` (HP-GL Plotter File (.hpg)) with BDF Document Preview.",
+            "order": 23
+          },
+          "bdf.theme.cad.hpg": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.hpg` (HP-GL Plotter File (.hpg)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 24
+          },
+          "bdf.preview.cad.hp2": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.hp2` (HP-GL/2 Plotter File (.hp2)) with BDF Document Preview.",
+            "order": 25
+          },
+          "bdf.theme.cad.hp2": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.hp2` (HP-GL/2 Plotter File (.hp2)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 26
+          },
+          "bdf.preview.cad.rtl": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Automatically open `*.rtl` (HP RTL Plotter File (.rtl)) with BDF Document Preview.",
+            "order": 27
+          },
+          "bdf.theme.cad.rtl": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[CAD & Plotter Drawings (DXF / Jw_cad / SXF / CGM / HP-GL/2)]** Preview theme for `*.rtl` (HP RTL Plotter File (.rtl)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 28
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.pcb",
+        "title": "07. PCB & Schematics (KiCad / Gerber / Excellon)",
+        "order": 7,
+        "properties": {
+          "bdf.preview.pcb.kicad_sch": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.kicad_sch` (KiCad Schematic (.kicad_sch)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.pcb.kicad_sch": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.kicad_sch` (KiCad Schematic (.kicad_sch)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.pcb.kicad_pcb": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.kicad_pcb` (KiCad Printed Circuit Board (.kicad_pcb)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.pcb.kicad_pcb": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.kicad_pcb` (KiCad Printed Circuit Board (.kicad_pcb)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.pcb.kicad_pro": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.kicad_pro` (KiCad Project File (.kicad_pro)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.pcb.kicad_pro": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.kicad_pro` (KiCad Project File (.kicad_pro)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.pcb.gbr": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gbr` (Gerber RS-274X PCB Layer (.gbr)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.pcb.gbr": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gbr` (Gerber RS-274X PCB Layer (.gbr)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.pcb.ger": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.ger` (Gerber RS-274X PCB Layer (.ger)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.pcb.ger": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.ger` (Gerber RS-274X PCB Layer (.ger)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.pcb.gtl": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gtl` (Gerber Top Copper Layer (.gtl)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.pcb.gtl": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gtl` (Gerber Top Copper Layer (.gtl)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.pcb.gbl": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gbl` (Gerber Bottom Copper Layer (.gbl)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.pcb.gbl": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gbl` (Gerber Bottom Copper Layer (.gbl)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.pcb.gto": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gto` (Gerber Top Silkscreen Layer (.gto)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.pcb.gto": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gto` (Gerber Top Silkscreen Layer (.gto)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          },
+          "bdf.preview.pcb.gbo": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gbo` (Gerber Bottom Silkscreen Layer (.gbo)) with BDF Document Preview.",
+            "order": 17
+          },
+          "bdf.theme.pcb.gbo": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gbo` (Gerber Bottom Silkscreen Layer (.gbo)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 18
+          },
+          "bdf.preview.pcb.gts": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gts` (Gerber Top Solder Mask Layer (.gts)) with BDF Document Preview.",
+            "order": 19
+          },
+          "bdf.theme.pcb.gts": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gts` (Gerber Top Solder Mask Layer (.gts)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 20
+          },
+          "bdf.preview.pcb.gbs": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gbs` (Gerber Bottom Solder Mask Layer (.gbs)) with BDF Document Preview.",
+            "order": 21
+          },
+          "bdf.theme.pcb.gbs": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gbs` (Gerber Bottom Solder Mask Layer (.gbs)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 22
+          },
+          "bdf.preview.pcb.gtp": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gtp` (Gerber Top Solder Paste Layer (.gtp)) with BDF Document Preview.",
+            "order": 23
+          },
+          "bdf.theme.pcb.gtp": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gtp` (Gerber Top Solder Paste Layer (.gtp)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 24
+          },
+          "bdf.preview.pcb.gbp": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gbp` (Gerber Bottom Solder Paste Layer (.gbp)) with BDF Document Preview.",
+            "order": 25
+          },
+          "bdf.theme.pcb.gbp": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gbp` (Gerber Bottom Solder Paste Layer (.gbp)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 26
+          },
+          "bdf.preview.pcb.gko": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gko` (Gerber Board Keep-Out / Outline Layer (.gko)) with BDF Document Preview.",
+            "order": 27
+          },
+          "bdf.theme.pcb.gko": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gko` (Gerber Board Keep-Out / Outline Layer (.gko)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 28
+          },
+          "bdf.preview.pcb.gml": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gml` (Gerber Mill / Outline Layer (.gml)) with BDF Document Preview.",
+            "order": 29
+          },
+          "bdf.theme.pcb.gml": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gml` (Gerber Mill / Outline Layer (.gml)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 30
+          },
+          "bdf.preview.pcb.gm1": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gm1` (Gerber Mechanical Layer 1 (.gm1)) with BDF Document Preview.",
+            "order": 31
+          },
+          "bdf.theme.pcb.gm1": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gm1` (Gerber Mechanical Layer 1 (.gm1)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 32
+          },
+          "bdf.preview.pcb.g1": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.g1` (Gerber Inner Copper Layer 1 (.g1)) with BDF Document Preview.",
+            "order": 33
+          },
+          "bdf.theme.pcb.g1": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.g1` (Gerber Inner Copper Layer 1 (.g1)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 34
+          },
+          "bdf.preview.pcb.g2": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.g2` (Gerber Inner Copper Layer 2 (.g2)) with BDF Document Preview.",
+            "order": 35
+          },
+          "bdf.theme.pcb.g2": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.g2` (Gerber Inner Copper Layer 2 (.g2)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 36
+          },
+          "bdf.preview.pcb.g3": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.g3` (Gerber Inner Copper Layer 3 (.g3)) with BDF Document Preview.",
+            "order": 37
+          },
+          "bdf.theme.pcb.g3": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.g3` (Gerber Inner Copper Layer 3 (.g3)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 38
+          },
+          "bdf.preview.pcb.g4": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.g4` (Gerber Inner Copper Layer 4 (.g4)) with BDF Document Preview.",
+            "order": 39
+          },
+          "bdf.theme.pcb.g4": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.g4` (Gerber Inner Copper Layer 4 (.g4)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 40
+          },
+          "bdf.preview.pcb.gp1": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gp1` (Gerber Internal Plane Layer 1 (.gp1)) with BDF Document Preview.",
+            "order": 41
+          },
+          "bdf.theme.pcb.gp1": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gp1` (Gerber Internal Plane Layer 1 (.gp1)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 42
+          },
+          "bdf.preview.pcb.gp2": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.gp2` (Gerber Internal Plane Layer 2 (.gp2)) with BDF Document Preview.",
+            "order": 43
+          },
+          "bdf.theme.pcb.gp2": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.gp2` (Gerber Internal Plane Layer 2 (.gp2)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 44
+          },
+          "bdf.preview.pcb.pho": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.pho` (Gerber Photoplot Data (.pho)) with BDF Document Preview.",
+            "order": 45
+          },
+          "bdf.theme.pcb.pho": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.pho` (Gerber Photoplot Data (.pho)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 46
+          },
+          "bdf.preview.pcb.art": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.art` (Cadence Allegro Gerber Artwork (.art)) with BDF Document Preview.",
+            "order": 47
+          },
+          "bdf.theme.pcb.art": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.art` (Cadence Allegro Gerber Artwork (.art)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 48
+          },
+          "bdf.preview.pcb.cmp": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.cmp` (EAGLE Component Side Copper (.cmp)) with BDF Document Preview.",
+            "order": 49
+          },
+          "bdf.theme.pcb.cmp": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.cmp` (EAGLE Component Side Copper (.cmp)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 50
+          },
+          "bdf.preview.pcb.sol": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.sol` (EAGLE Solder Side Copper (.sol)) with BDF Document Preview.",
+            "order": 51
+          },
+          "bdf.theme.pcb.sol": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.sol` (EAGLE Solder Side Copper (.sol)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 52
+          },
+          "bdf.preview.pcb.plc": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.plc` (EAGLE Component Side Silkscreen (.plc)) with BDF Document Preview.",
+            "order": 53
+          },
+          "bdf.theme.pcb.plc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.plc` (EAGLE Component Side Silkscreen (.plc)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 54
+          },
+          "bdf.preview.pcb.pls": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.pls` (EAGLE Solder Side Silkscreen (.pls)) with BDF Document Preview.",
+            "order": 55
+          },
+          "bdf.theme.pcb.pls": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.pls` (EAGLE Solder Side Silkscreen (.pls)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 56
+          },
+          "bdf.preview.pcb.stc": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.stc` (EAGLE Component Side Solder Stop Mask (.stc)) with BDF Document Preview.",
+            "order": 57
+          },
+          "bdf.theme.pcb.stc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.stc` (EAGLE Component Side Solder Stop Mask (.stc)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 58
+          },
+          "bdf.preview.pcb.sts": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.sts` (EAGLE Solder Side Solder Stop Mask (.sts)) with BDF Document Preview.",
+            "order": 59
+          },
+          "bdf.theme.pcb.sts": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.sts` (EAGLE Solder Side Solder Stop Mask (.sts)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 60
+          },
+          "bdf.preview.pcb.crc": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.crc` (EAGLE Component Side Solder Paste (.crc)) with BDF Document Preview.",
+            "order": 61
+          },
+          "bdf.theme.pcb.crc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.crc` (EAGLE Component Side Solder Paste (.crc)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 62
+          },
+          "bdf.preview.pcb.crs": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.crs` (EAGLE Solder Side Solder Paste (.crs)) with BDF Document Preview.",
+            "order": 63
+          },
+          "bdf.theme.pcb.crs": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.crs` (EAGLE Solder Side Solder Paste (.crs)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 64
+          },
+          "bdf.preview.pcb.drl": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.drl` (Excellon NC Drill File (.drl)) with BDF Document Preview.",
+            "order": 65
+          },
+          "bdf.theme.pcb.drl": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.drl` (Excellon NC Drill File (.drl)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 66
+          },
+          "bdf.preview.pcb.drd": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.drd` (Excellon NC Drill File (.drd)) with BDF Document Preview.",
+            "order": 67
+          },
+          "bdf.theme.pcb.drd": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.drd` (Excellon NC Drill File (.drd)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 68
+          },
+          "bdf.preview.pcb.xln": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.xln` (Excellon NC Drill File (.xln)) with BDF Document Preview.",
+            "order": 69
+          },
+          "bdf.theme.pcb.xln": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.xln` (Excellon NC Drill File (.xln)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 70
+          },
+          "bdf.preview.pcb.exc": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.exc` (Excellon NC Drill File (.exc)) with BDF Document Preview.",
+            "order": 71
+          },
+          "bdf.theme.pcb.exc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.exc` (Excellon NC Drill File (.exc)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 72
+          },
+          "bdf.preview.pcb.zip": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Automatically open `*.zip` (Gerber / KiCad Project ZIP Archive (.zip)) with BDF Document Preview.",
+            "order": 73
+          },
+          "bdf.theme.pcb.zip": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[PCB & Schematics (KiCad / Gerber / Excellon)]** Preview theme for `*.zip` (Gerber / KiCad Project ZIP Archive (.zip)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 74
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.image",
+        "title": "08. Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)",
+        "order": 8,
+        "properties": {
+          "bdf.preview.image.tif": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.tif` (Multi-page TIFF Image (.tif)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.image.tif": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.tif` (Multi-page TIFF Image (.tif)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.image.tiff": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.tiff` (Multi-page TIFF Image (.tiff)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.image.tiff": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.tiff` (Multi-page TIFF Image (.tiff)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.image.png": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.png` (PNG Image (.png)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.image.png": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.png` (PNG Image (.png)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.image.apng": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.apng` (Animated PNG Image (.apng)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.image.apng": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.apng` (Animated PNG Image (.apng)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.image.jpg": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.jpg` (JPEG Image (.jpg)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.image.jpg": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.jpg` (JPEG Image (.jpg)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.image.jpeg": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.jpeg` (JPEG Image (.jpeg)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.image.jpeg": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.jpeg` (JPEG Image (.jpeg)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.image.jpe": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.jpe` (JPEG Image (.jpe)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.image.jpe": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.jpe` (JPEG Image (.jpe)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.image.jfif": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.jfif` (JPEG JFIF Image (.jfif)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.image.jfif": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.jfif` (JPEG JFIF Image (.jfif)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          },
+          "bdf.preview.image.gif": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.gif` (GIF Image (.gif)) with BDF Document Preview.",
+            "order": 17
+          },
+          "bdf.theme.image.gif": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.gif` (GIF Image (.gif)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 18
+          },
+          "bdf.preview.image.webp": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.webp` (WebP Image (.webp)) with BDF Document Preview.",
+            "order": 19
+          },
+          "bdf.theme.image.webp": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.webp` (WebP Image (.webp)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 20
+          },
+          "bdf.preview.image.avif": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.avif` (AVIF Image (.avif)) with BDF Document Preview.",
+            "order": 21
+          },
+          "bdf.theme.image.avif": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.avif` (AVIF Image (.avif)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 22
+          },
+          "bdf.preview.image.bmp": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.bmp` (BMP Bitmap Image (.bmp)) with BDF Document Preview.",
+            "order": 23
+          },
+          "bdf.theme.image.bmp": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.bmp` (BMP Bitmap Image (.bmp)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 24
+          },
+          "bdf.preview.image.ico": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.ico` (ICO Icon Image (.ico)) with BDF Document Preview.",
+            "order": 25
+          },
+          "bdf.theme.image.ico": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.ico` (ICO Icon Image (.ico)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 26
+          },
+          "bdf.preview.image.svg": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Automatically open `*.svg` (SVG Vector Image (.svg)) with BDF Document Preview.",
+            "order": 27
+          },
+          "bdf.theme.image.svg": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Images (TIFF / PNG / JPEG / GIF / WebP / AVIF / BMP / ICO / SVG)]** Preview theme for `*.svg` (SVG Vector Image (.svg)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 28
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.music",
+        "title": "09. Sheet Music & Scores (MusicXML / MIDI / MML)",
+        "order": 9,
+        "properties": {
+          "bdf.preview.music.musicxml": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.musicxml` (MusicXML Score (.musicxml)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.music.musicxml": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.musicxml` (MusicXML Score (.musicxml)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.music.mxl": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.mxl` (Compressed MusicXML Score (.mxl)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.music.mxl": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.mxl` (Compressed MusicXML Score (.mxl)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.music.mid": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.mid` (Standard MIDI File (.mid)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.music.mid": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.mid` (Standard MIDI File (.mid)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.music.midi": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.midi` (Standard MIDI File (.midi)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.music.midi": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.midi` (Standard MIDI File (.midi)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.music.smf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.smf` (Standard MIDI File (.smf)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.music.smf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.smf` (Standard MIDI File (.smf)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.music.kar": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.kar` (Karaoke MIDI File (.kar)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.music.kar": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.kar` (Karaoke MIDI File (.kar)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.music.rmi": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.rmi` (RIFF MIDI File (.rmi)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.music.rmi": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.rmi` (RIFF MIDI File (.rmi)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.music.mml": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Automatically open `*.mml` (Music Macro Language Score (.mml)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.music.mml": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Sheet Music & Scores (MusicXML / MIDI / MML)]** Preview theme for `*.mml` (Music Macro Language Score (.mml)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.audio",
+        "title": "10. Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)",
+        "order": 10,
+        "properties": {
+          "bdf.preview.audio.mp3": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.mp3` (MP3 Audio File (.mp3)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.audio.mp3": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.mp3` (MP3 Audio File (.mp3)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.audio.m4a": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.m4a` (MPEG-4 Audio / AAC / ALAC (.m4a)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.audio.m4a": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.m4a` (MPEG-4 Audio / AAC / ALAC (.m4a)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.audio.m4b": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.m4b` (MPEG-4 Audiobook (.m4b)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.audio.m4b": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.m4b` (MPEG-4 Audiobook (.m4b)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.audio.m4p": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.m4p` (MPEG-4 Audio (.m4p)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.audio.m4p": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.m4p` (MPEG-4 Audio (.m4p)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.audio.aac": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.aac` (AAC (ADTS) Audio File (.aac)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.audio.aac": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.aac` (AAC (ADTS) Audio File (.aac)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.audio.flac": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.flac` (FLAC Lossless Audio File (.flac)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.audio.flac": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.flac` (FLAC Lossless Audio File (.flac)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 12
+          },
+          "bdf.preview.audio.ogg": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.ogg` (Ogg Vorbis Audio File (.ogg)) with BDF Document Preview.",
+            "order": 13
+          },
+          "bdf.theme.audio.ogg": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.ogg` (Ogg Vorbis Audio File (.ogg)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 14
+          },
+          "bdf.preview.audio.oga": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.oga` (Ogg Audio File (.oga)) with BDF Document Preview.",
+            "order": 15
+          },
+          "bdf.theme.audio.oga": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.oga` (Ogg Audio File (.oga)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 16
+          },
+          "bdf.preview.audio.opus": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.opus` (Ogg Opus Audio File (.opus)) with BDF Document Preview.",
+            "order": 17
+          },
+          "bdf.theme.audio.opus": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.opus` (Ogg Opus Audio File (.opus)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 18
+          },
+          "bdf.preview.audio.spx": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.spx` (Ogg Speex Audio File (.spx)) with BDF Document Preview.",
+            "order": 19
+          },
+          "bdf.theme.audio.spx": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.spx` (Ogg Speex Audio File (.spx)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 20
+          },
+          "bdf.preview.audio.wav": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.wav` (WAV Audio File (.wav)) with BDF Document Preview.",
+            "order": 21
+          },
+          "bdf.theme.audio.wav": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.wav` (WAV Audio File (.wav)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 22
+          },
+          "bdf.preview.audio.wave": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.wave` (WAVE Audio File (.wave)) with BDF Document Preview.",
+            "order": 23
+          },
+          "bdf.theme.audio.wave": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.wave` (WAVE Audio File (.wave)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 24
+          },
+          "bdf.preview.audio.aif": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.aif` (AIFF Audio File (.aif)) with BDF Document Preview.",
+            "order": 25
+          },
+          "bdf.theme.audio.aif": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.aif` (AIFF Audio File (.aif)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 26
+          },
+          "bdf.preview.audio.aiff": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.aiff` (AIFF Audio File (.aiff)) with BDF Document Preview.",
+            "order": 27
+          },
+          "bdf.theme.audio.aiff": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.aiff` (AIFF Audio File (.aiff)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 28
+          },
+          "bdf.preview.audio.aifc": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Automatically open `*.aifc` (AIFF-C Audio File (.aifc)) with BDF Document Preview.",
+            "order": 29
+          },
+          "bdf.theme.audio.aifc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "light",
+            "markdownDescription": "**[Audio Files (MP3 / AAC / FLAC / Ogg / Opus / WAV / AIFF)]** Preview theme for `*.aifc` (AIFF-C Audio File (.aifc)). Default: `light` (`auto`, `light`, or `dark`).",
+            "order": 30
+          }
+        }
+      },
+      {
+        "id": "bdf.preview.font",
+        "title": "11. Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)",
+        "order": 11,
+        "properties": {
+          "bdf.preview.font.ttf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Automatically open `*.ttf` (TrueType Font Specimen (.ttf)) with BDF Document Preview.",
+            "order": 1
+          },
+          "bdf.theme.font.ttf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Preview theme for `*.ttf` (TrueType Font Specimen (.ttf)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 2
+          },
+          "bdf.preview.font.otf": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Automatically open `*.otf` (OpenType Font Specimen (.otf)) with BDF Document Preview.",
+            "order": 3
+          },
+          "bdf.theme.font.otf": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Preview theme for `*.otf` (OpenType Font Specimen (.otf)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 4
+          },
+          "bdf.preview.font.ttc": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Automatically open `*.ttc` (TrueType Font Collection Specimen (.ttc)) with BDF Document Preview.",
+            "order": 5
+          },
+          "bdf.theme.font.ttc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Preview theme for `*.ttc` (TrueType Font Collection Specimen (.ttc)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 6
+          },
+          "bdf.preview.font.otc": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Automatically open `*.otc` (OpenType Font Collection Specimen (.otc)) with BDF Document Preview.",
+            "order": 7
+          },
+          "bdf.theme.font.otc": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Preview theme for `*.otc` (OpenType Font Collection Specimen (.otc)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 8
+          },
+          "bdf.preview.font.woff": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Automatically open `*.woff` (Web Open Font Format 1.0 Specimen (.woff)) with BDF Document Preview.",
+            "order": 9
+          },
+          "bdf.theme.font.woff": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Preview theme for `*.woff` (Web Open Font Format 1.0 Specimen (.woff)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 10
+          },
+          "bdf.preview.font.woff2": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Automatically open `*.woff2` (Web Open Font Format 2.0 Specimen (.woff2)) with BDF Document Preview.",
+            "order": 11
+          },
+          "bdf.theme.font.woff2": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "light",
+              "dark"
+            ],
+            "enumDescriptions": [
+              "Automatically follow the active VS Code Color Theme (Dark / Light)",
+              "Always render in Light mode (original white paper / colors)",
+              "Always render in Dark mode"
+            ],
+            "default": "auto",
+            "markdownDescription": "**[Fonts (TTF / OTF / TTC / OTC / WOFF / WOFF2)]** Preview theme for `*.woff2` (Web Open Font Format 2.0 Specimen (.woff2)). Default: `auto` (`auto`, `light`, or `dark`).",
+            "order": 12
+          }
+        }
+      }
+    ]
+  }
+}
