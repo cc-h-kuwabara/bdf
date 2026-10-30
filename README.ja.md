@@ -22,13 +22,37 @@ npm ci && npm run demo                             # ブラウザで開く
 
 npm パッケージとしての表示・ブラウザ内変換は [npm パッケージガイド](docs/npm.ja.md) を参照してください。
 
+## VS Code 拡張機能
+
+[`packages/vscode`](packages/vscode) には、BDF が対応する全140種類の拡張子を VS Code 内で直接プレビューできる拡張機能（**BDF Document Preview**）が含まれています。
+
+- **全140拡張子のダイレクトプレビュー**: Office 文書（`.xlsx`, `.docx`, `.pptx`, `.vsdx`）、PDF / EPUB / Markdown / HTML、データ表（`.csv`, `.tsv`, `.parquet`）、デザイン・DTP（`.ai`, `.psd`, `.idml`, `.drawio`, `.emf`）、CAD・プロッタ図面（`.dxf`, `.jww`, `.sxf`, `.cgm`, `.plt`）、プリント基板（`.kicad_sch`, `.kicad_pcb`, Gerber, Excellon）、画像、楽譜（`.musicxml`, `.mid`, `.mml`）、音声、フォントに対応。
+- **テキスト・セル選択＆コピー・全文検索**: Canvas 2D プレビュー上でのマウスドラッグによるテキスト・表セルの選択とコピー（`Ctrl+C` / `Cmd+C`）、ドキュメント内検索（`Ctrl+F` / `Cmd+F`）、ズーム、レイアウト切替（単一ページ / 見開き / 連続）、シート・ビュー切替に対応。
+- **拡張子ごとの自動プレビュー＆テーマ設定**: 設定画面からカテゴリー別に各拡張子の自動プレビュー有効化（`bdf.preview.<category>.<ext>`）およびプレビューテーマ（`auto`: VS Code連動 / `light`: ライト固定 / `dark`: ダーク固定、`bdf.theme.<category>.<ext>`）を個別に設定可能。
+
+### VSIX のビルドとインストール
+
+```sh
+# 1. Go CLI バイナリとワークスペースパッケージのビルド
+go build -o ./bin/bdf ./cmd/bdf        # (Windows の場合: ./bin/bdf.exe)
+npm install && npm run build
+
+# 2. VS Code 拡張機能のバンドルと VSIX パッケージ化
+cd packages/vscode
+npm run build
+npx @vscode/vsce package --no-dependencies --skip-license
+
+# 3. VS Code へのインストール
+code --install-extension bdf-preview-0.1.8.vsix
+```
+
 ## 構成
 
 | 場所 | 内容 |
 |---|---|
 | `*.go`、`converter/`、`encoding/`、`raster/`、`contrib/`、`internal/` | Go のエンコーダ・デコーダ、入力形式ごとの変換器パッケージ、文書が持つ値の表の Parquet エンコーディング |
 | `form/`、`vector/`、`text/` | 帳票のテンプレートをデータで穴埋めする: タグを書いた Excel・Word・PowerPoint、入力欄のある PDF、pdfme のテンプレート、連帳やレシートの行を書いたテキスト（QR コードとバーコードは `image/barcode/`）。文書を PDF（タグ付き PDF と PDF/A も）と Markdown に書き出す |
-| `packages/` | デコーダ、レンダラー、表示面、TinyGo を使うブラウザ内変換の npm パッケージ |
+| `packages/` | デコーダ、レンダラー、表示面、TinyGo を使うブラウザ内変換の npm パッケージ、および VS Code プレビュー拡張機能（`packages/vscode`） |
 | `examples/`、`site/` | デモビューア、サーバー構成のサンプル 4 つ、GitHub Pages で公開しているサイト |
 | `docs/` | このドキュメント |
 

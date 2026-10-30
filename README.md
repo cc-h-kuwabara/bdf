@@ -22,13 +22,37 @@ Go 1.27+ and Node.js are needed to build from source; see [Getting started](http
 
 For an npm integration, including server-converted BDF and browser conversion presets, see [npm packages](docs/npm.md).
 
+## VS Code extension
+
+[`packages/vscode`](packages/vscode) is a Visual Studio Code extension (**BDF Document Preview**) that previews all 140 BDF-supported file extensions directly inside VS Code using `@bdfkit/viewer`, `@bdfkit/render`, and the `bdf` CLI:
+
+- **Direct preview of 140 file extensions** across 10 categories: Office documents (`.xlsx`, `.docx`, `.pptx`, `.vsdx`), PDF/EPUB/Markdown/HTML, data tables (`.csv`, `.tsv`, `.parquet`), design & DTP (`.ai`, `.psd`, `.idml`, `.drawio`, `.emf`), CAD & plotter drawings (`.dxf`, `.jww`, `.sxf`, `.cgm`, `.plt`), PCB & schematics (`.kicad_sch`, `.kicad_pcb`, Gerber, Excellon), images, sheet music (`.musicxml`, `.mid`, `.mml`), audio files, and fonts.
+- **Selectable text & table cells**: Drag-select and copy (`Ctrl+C` / `Cmd+C`) text and spreadsheet/table cells directly from the Canvas 2D preview, plus full-text search (`Ctrl+F` / `Cmd+F`), zoom, layout switching (`single` / `spread` / `continuous`), and multi-sheet/view selection.
+- **Per-extension file associations & theme control**: Configure which extensions open automatically in BDF Document Preview (`bdf.preview.<category>.<ext>`) and set the preview theme (`auto` following VS Code's color theme, `light`, or `dark`) per extension (`bdf.theme.<category>.<ext>`).
+
+### Building and installing the VSIX
+
+```sh
+# 1. Build the Go CLI binary and workspace packages
+go build -o ./bin/bdf ./cmd/bdf        # (on Windows: ./bin/bdf.exe)
+npm install && npm run build
+
+# 2. Bundle and package the VS Code extension
+cd packages/vscode
+npm run build
+npx @vscode/vsce package --no-dependencies --skip-license
+
+# 3. Install in VS Code
+code --install-extension bdf-preview-0.1.8.vsix
+```
+
 ## Layout
 
 | Path | Contents |
 |---|---|
 | `*.go`, `converter/`, `encoding/`, `raster/`, `contrib/`, `internal/` | The Go encoder/decoder, one converter package per input format, and the Parquet encoding of the tables of values a document holds |
 | `form/`, `vector/`, `text/` | Filling templates of forms with data: Excel, Word and PowerPoint files with tags, PDFs with form fields, templates of pdfme, text files of the lines of continuous forms and receipts (QR codes and barcodes are `image/barcode/`); and writing documents as PDF files, tagged and PDF/A too, and as Markdown |
-| `packages/` | The decoder, renderer, viewer surface and TinyGo-backed browser converter npm packages |
+| `packages/` | The decoder, renderer, viewer surface, TinyGo-backed browser converter npm packages, and the VS Code preview extension (`packages/vscode`) |
 | `examples/`, `site/` | The demo viewer, four sample server architectures, and the site published on GitHub Pages |
 | `docs/` | This documentation |
 
