@@ -15,19 +15,19 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('bdf.openPreview', async (uri?: vscode.Uri) => {
       const targetUri = uri || vscode.window.activeTextEditor?.document.uri;
       if (!targetUri) {
-        vscode.window.showWarningMessage('プレビューするファイルが選択されていません。');
+        vscode.window.showWarningMessage('No file selected to preview.');
         return;
       }
       BdfPreviewPanel.createOrShow(context, targetUri, vscode.ViewColumn.Active);
     })
   );
 
-  // 3. コマンド「bdf.openPreviewToSide」を登録
+  // 3. Register "bdf.openPreviewToSide" command
   context.subscriptions.push(
     vscode.commands.registerCommand('bdf.openPreviewToSide', async (uri?: vscode.Uri) => {
       const targetUri = uri || vscode.window.activeTextEditor?.document.uri;
       if (!targetUri) {
-        vscode.window.showWarningMessage('プレビューするファイルが選択されていません。');
+        vscode.window.showWarningMessage('No file selected to preview.');
         return;
       }
       BdfPreviewPanel.createOrShow(context, targetUri, vscode.ViewColumn.Beside);

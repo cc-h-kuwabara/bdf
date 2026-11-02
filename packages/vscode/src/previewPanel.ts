@@ -46,7 +46,7 @@ export class BdfPreviewPanel {
             await this.loadAndSend();
             break;
           case 'error':
-            vscode.window.showErrorMessage(`BDFプレビューエラー: ${msg.message}`);
+            vscode.window.showErrorMessage(`BDF Preview Error: ${msg.message}`);
             break;
           case 'themeChanged':
             await setThemeForExtension(this.uri.fsPath, msg.theme);
@@ -97,7 +97,7 @@ export class BdfPreviewPanel {
     postToWebview({
       type: 'loading',
       filename: fileName,
-      message: `${fileName} を変換・読み込み中...`
+      message: `Converting and loading ${fileName}...`
     });
 
     try {
@@ -117,8 +117,8 @@ export class BdfPreviewPanel {
     } catch (err: any) {
       if (err instanceof PasswordRequiredError || err.name === 'PasswordRequiredError') {
         const prompt = retryPassword
-          ? 'パスワードが間違っています。再度入力してください:'
-          : 'このファイルは暗号化されています。パスワードを入力してください:';
+          ? 'Incorrect password. Please try again:'
+          : 'This file is password-protected. Please enter the password:';
 
         const input = await vscode.window.showInputBox({
           prompt,

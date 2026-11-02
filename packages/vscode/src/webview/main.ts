@@ -116,7 +116,7 @@ bodyThemeObserver.observe(document.body, {
 });
 applyEffectiveTheme();
 
-function showLoading(msg = 'ファイルを読み込み中...') {
+function showLoading(msg = 'Loading file...') {
   overlayElement.classList.remove('hidden');
   overlaySpinner.classList.remove('hidden');
   overlayMsg.classList.remove('hidden');
@@ -227,7 +227,7 @@ async function initViewer(): Promise<Viewer> {
   try {
     const resp = await fetch(window.__bdfWorkerUrl);
     if (!resp.ok) {
-      throw new Error(`Workerスクリプトのロードに失敗しました (status: ${resp.status})`);
+      throw new Error(`Failed to load worker script (status: ${resp.status})`);
     }
     const workerCode = await resp.text();
     const blob = new Blob([workerCode], { type: 'application/javascript' });
@@ -268,7 +268,7 @@ async function initViewer(): Promise<Viewer> {
 
     return viewer;
   } catch (err: any) {
-    showError(`ビューアーの初期化に失敗しました: ${err.message || String(err)}`);
+    showError(`Failed to initialize viewer: ${err.message || String(err)}`);
     throw err;
   }
 }
@@ -294,7 +294,7 @@ function updateViewsAndPages() {
     }
     viewSelect.disabled = doc.views.length <= 1;
   } else {
-    viewSelect.innerHTML = '<option value="">(デフォルト)</option>';
+    viewSelect.innerHTML = '<option value="">(Default)</option>';
     viewSelect.disabled = true;
   }
 
@@ -428,12 +428,12 @@ findBtn.addEventListener('click', () => {
   viewer.openFind();
 });
 
-// メッセージハンドラ
+// Message handler
 window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessage>) => {
   const msg = event.data;
   switch (msg.type) {
     case 'loading': {
-      showLoading(msg.message || `${msg.filename} を変換中...`);
+      showLoading(msg.message || `Converting ${msg.filename}...`);
       break;
     }
     case 'error': {
@@ -450,13 +450,13 @@ window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessa
         if (msg.filename && themeLabel) {
           const dotIdx = msg.filename.lastIndexOf('.');
           const extText = dotIdx >= 0 ? msg.filename.slice(dotIdx).toLowerCase() : '';
-          themeLabel.textContent = extText ? `テーマ (${extText}):` : 'テーマ:';
+          themeLabel.textContent = extText ? `Theme (${extText}):` : 'Theme:';
         }
         if (msg.theme) {
           currentThemeMode = msg.theme;
           applyEffectiveTheme();
         }
-        showLoading('描画の準備中...');
+        showLoading('Preparing document view...');
         const v = await initViewer();
         if (msg.defaultLayout && ['single', 'spread', 'continuous'].includes(msg.defaultLayout)) {
           layoutSelect.value = msg.defaultLayout;
@@ -472,7 +472,7 @@ window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessa
         hideOverlay();
         setTimeout(attachTextLayers, 150);
       } catch (err: any) {
-        showError(`ファイルのプレビューに失敗しました: ${err.message || String(err)}`);
+        showError(`Failed to preview file: ${err.message || String(err)}`);
       }
       break;
     }

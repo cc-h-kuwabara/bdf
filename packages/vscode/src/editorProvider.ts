@@ -86,7 +86,7 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
       postToWebview({
         type: 'loading',
         filename: fileName,
-        message: `${fileName} を変換・読み込み中...`
+        message: `Converting and loading ${fileName}...`
       });
 
       try {
@@ -105,10 +105,9 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
         });
       } catch (err: any) {
         if (err instanceof PasswordRequiredError || err.name === 'PasswordRequiredError') {
-          // パスワード入力プロンプトを表示
           const prompt = retryPassword
-            ? 'パスワードが間違っています。再度入力してください:'
-            : 'このファイルは暗号化されています。パスワードを入力してください:';
+            ? 'Incorrect password. Please try again:'
+            : 'This file is password-protected. Please enter the password:';
 
           const input = await vscode.window.showInputBox({
             prompt,
@@ -130,14 +129,13 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
       }
     };
 
-    // Webview からのイベントリスナー
     const messageSub = webview.onDidReceiveMessage(async (msg: WebviewToHostMessage) => {
       switch (msg.type) {
         case 'ready':
           await loadAndSendDocument();
           break;
         case 'error':
-          vscode.window.showErrorMessage(`BDFプレビューエラー: ${msg.message}`);
+          vscode.window.showErrorMessage(`BDF Preview Error: ${msg.message}`);
           break;
         case 'themeChanged': {
           await setThemeForExtension(document.uri.fsPath, msg.theme);
@@ -145,7 +143,7 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
         }
         case 'requestPassword': {
           const input = await vscode.window.showInputBox({
-            prompt: 'パスワードを入力してください:',
+            prompt: 'Please enter the document password:',
             password: true,
             ignoreFocusOut: true
           });

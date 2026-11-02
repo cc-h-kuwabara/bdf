@@ -82,7 +82,7 @@ export class BdfConverter {
     }
 
     throw new Error(
-      'bdf CLIツールが見つかりません。bdf.exeをビルドするか、設定「bdf.bdfBinaryPath」でパスを指定してください。'
+      'bdf CLI binary was not found. Please build bdf or specify its path in the "bdf.bdfBinaryPath" setting.'
     );
   }
 
@@ -163,7 +163,7 @@ export class BdfConverter {
             } else {
               reject(
                 new Error(
-                  `BDF変換エラー (終了コード ${code}): ${stderr.trim() || stdout.trim() || '不明なエラー'}`
+                  `BDF conversion failed (exit code ${code}): ${stderr.trim() || stdout.trim() || 'Unknown error'}`
                 )
               );
             }
@@ -171,9 +171,8 @@ export class BdfConverter {
         });
       });
 
-      // 変換結果を読み込み
       if (!fs.existsSync(tempOutFile)) {
-        throw new Error('BDFファイルの生成に失敗しました（出力ファイルが見つかりません）');
+        throw new Error('Failed to generate BDF file (output file not found).');
       }
 
       const buffer = await fs.promises.readFile(tempOutFile);
