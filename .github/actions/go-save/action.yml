@@ -5,6 +5,10 @@ description: >
   them under a new key, starting from the last one, and Go trims GOCACHE
   only of what it has not used for five days, so without this the cache
   grew by what each commit built (572 to 706 MB in one push for the go job).
+  It saves only on main: a cache saved by a pull request (refs/pull/N/merge)
+  or a tag can be restored by nothing but that same ref, while the ones of
+  main are restored by every branch and pull request. Pull requests saved
+  1.7 to 3.4 GB each, which pushed the repository past its 10 GB.
 inputs:
   path:
     description: the path output of .github/actions/go
@@ -18,7 +22,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - shell: bash
+    - if: github.ref == 'refs/heads/main'
+      shell: bash
       run: |
         dir=$(go env GOCACHE)
         if command -v cygpath >/dev/null; then dir=$(cygpath -u "$dir"); fi
@@ -37,7 +42,8 @@ runs:
           LC_ALL=C comm -23 - "$RUNNER_TEMP/gocache-used" |
           awk -v dir="$dir" '{ print dir "/" substr($0, 1, 2) "/" $0 }' | tr '\n' '\0' | xargs -0 rm -rf
         echo "GOCACHE: $before before, $(du -sh "$dir" | cut -f1) of it kept"
-    - uses: actions/cache/save@v6
+    - if: github.ref == 'refs/heads/main'
+      uses: actions/cache/save@v6
       with:
         path: ${{ inputs.path }}
         key: ${{ inputs.key }}

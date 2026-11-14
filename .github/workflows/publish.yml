@@ -27,6 +27,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: "1.27.3" # the patch with the fix of GO-2026-6809 (crypto/x509), after 6617 and 6612/6613, which the runner's cache lacks; the wasm job of ci.yml builds with it too
+          cache: false # a cache saved by a tag is restored by nothing else
 
       - uses: acifani/setup-tinygo@v3
         with:
@@ -113,6 +114,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: "1.27.3" # the patch with the fix of GO-2026-6809 (crypto/x509), after 6617 and 6612/6613, which the runner's cache lacks; the wasm job of ci.yml builds with it too
+          cache: false # a cache saved by a tag is restored by nothing else
 
       - name: write the conformance suite
         run: |

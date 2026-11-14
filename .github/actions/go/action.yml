@@ -2,7 +2,7 @@ name: Go, with its caches
 description: >
   actions/setup-go, and the module and build caches (GOMODCACHE and
   GOCACHE) of the job restored from its newest run on main. Pull requests
-  only read them: the job saves them on main, at its end, with
+  only read them: the job saves them on main only, at its end, with
   .github/actions/go-save and the outputs of this action. (setup-go's own
   cache was saved by whichever job of a pull request came first, in the
   scope of that pull request, under a key of go.sum it never saved again,
