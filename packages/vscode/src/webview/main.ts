@@ -3,8 +3,7 @@ import {
   BdfWorkerClient,
   buildTextLayer,
   installCopyHandler,
-  TEXT_LAYER_CSS,
-  type TextContent
+  TEXT_LAYER_CSS
 } from '@bdfkit/render';
 import type { HostToWebviewMessage, PreviewThemeMode, WebviewToHostMessage } from '../types.js';
 
@@ -157,7 +156,7 @@ function attachTextLayers() {
     if (isNaN(pageIndex) || frame.querySelector('.bdfTextLayer') || frame.dataset.bdfTextLoading === '1') return;
     frame.dataset.bdfTextLoading = '1';
 
-    renderer!.content(currentView.id, pageIndex).then((content: TextContent) => {
+    renderer!.content(currentView.id, pageIndex).then((content) => {
       delete frame.dataset.bdfTextLoading;
       if (!frame.isConnected || frame.querySelector('.bdfTextLayer')) return;
       const layer = buildTextLayer(content, currentZoom);
@@ -199,7 +198,7 @@ function attachTextLayers() {
         const sheetMeta = { rows: rowsCount, cols: colsCount };
         const reqId = ++sheetRequestSerial;
 
-        renderer!.sheetContent(currentView.id, vp).then((content: TextContent) => {
+        renderer!.sheetContent(currentView.id, vp).then((content) => {
           if (reqId !== sheetRequestSerial || !sheetLayerHost?.isConnected) return;
           const layer = buildTextLayer(content, currentZoom, {
             sheet: sheetMeta,

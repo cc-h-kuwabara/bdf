@@ -29,21 +29,17 @@ npm パッケージとしての表示・ブラウザ内変換は [npm パッケ�
 - **全140拡張子のダイレクトプレビュー**: Office 文書（`.xlsx`, `.docx`, `.pptx`, `.vsdx`）、PDF / EPUB / Markdown / HTML、データ表（`.csv`, `.tsv`, `.parquet`）、デザイン・DTP（`.ai`, `.psd`, `.idml`, `.drawio`, `.emf`）、CAD・プロッタ図面（`.dxf`, `.jww`, `.sxf`, `.cgm`, `.plt`）、プリント基板（`.kicad_sch`, `.kicad_pcb`, Gerber, Excellon）、画像、楽譜（`.musicxml`, `.mid`, `.mml`）、音声、フォントに対応。
 - **テキスト・セル選択＆コピー・全文検索**: Canvas 2D プレビュー上でのマウスドラッグによるテキスト・表セルの選択とコピー（`Ctrl+C` / `Cmd+C`）、ドキュメント内検索（`Ctrl+F` / `Cmd+F`）、ズーム、レイアウト切替（単一ページ / 見開き / 連続）、シート・ビュー切替に対応。
 - **拡張子ごとの自動プレビュー＆テーマ設定**: 設定画面からカテゴリー別に各拡張子の自動プレビュー有効化（`bdf.preview.<category>.<ext>`）およびプレビューテーマ（`auto`: VS Code連動 / `light`: ライト固定 / `dark`: ダーク固定、`bdf.theme.<category>.<ext>`）を個別に設定可能。
+- **テキスト＆バイナリ16進数ダンプフォールバック**: 非対応ファイルは自動で通常テキスト表示または `hexdump -C` 形式の16進数ダンプとしてプレビュー表示されます（自動フォーカスおよび `ESC` キーでのクローズに対応）。
 
 ### VSIX のビルドとインストール
 
 ```sh
-# 1. Go CLI バイナリとワークスペースパッケージのビルド
-go build -o ./bin/bdf ./cmd/bdf        # (Windows の場合: ./bin/bdf.exe)
-npm install && npm run build
+# 1. 依存関係のインストールと現在プラットフォーム向け VSIX のビルド
+npm install && npm run package:vscode
+# (全プラットフォーム向けに一括生成する場合: npm run package:vscode:all)
 
-# 2. VS Code 拡張機能のバンドルと VSIX パッケージ化
-cd packages/vscode
-npm run build
-npx @vscode/vsce package --no-dependencies --skip-license
-
-# 3. VS Code へのインストール
-code --install-extension bdf-preview-0.1.8.vsix
+# 2. VS Code へのインストール（Linux x64 の例）
+code --install-extension packages/vscode/bdf-preview-linux-x64-0.1.8.vsix
 ```
 
 ## 構成

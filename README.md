@@ -29,21 +29,17 @@ For an npm integration, including server-converted BDF and browser conversion pr
 - **Direct preview of 140 file extensions** across 10 categories: Office documents (`.xlsx`, `.docx`, `.pptx`, `.vsdx`), PDF/EPUB/Markdown/HTML, data tables (`.csv`, `.tsv`, `.parquet`), design & DTP (`.ai`, `.psd`, `.idml`, `.drawio`, `.emf`), CAD & plotter drawings (`.dxf`, `.jww`, `.sxf`, `.cgm`, `.plt`), PCB & schematics (`.kicad_sch`, `.kicad_pcb`, Gerber, Excellon), images, sheet music (`.musicxml`, `.mid`, `.mml`), audio files, and fonts.
 - **Selectable text & table cells**: Drag-select and copy (`Ctrl+C` / `Cmd+C`) text and spreadsheet/table cells directly from the Canvas 2D preview, plus full-text search (`Ctrl+F` / `Cmd+F`), zoom, layout switching (`single` / `spread` / `continuous`), and multi-sheet/view selection.
 - **Per-extension file associations & theme control**: Configure which extensions open automatically in BDF Document Preview (`bdf.preview.<category>.<ext>`) and set the preview theme (`auto` following VS Code's color theme, `light`, or `dark`) per extension (`bdf.theme.<category>.<ext>`).
+- **Text & binary hex dump fallback**: Unsupported files automatically fall back to a plain-text preview or `hexdump -C` style hex dump, with automatic focus and `Esc` to close.
 
 ### Building and installing the VSIX
 
 ```sh
-# 1. Build the Go CLI binary and workspace packages
-go build -o ./bin/bdf ./cmd/bdf        # (on Windows: ./bin/bdf.exe)
-npm install && npm run build
+# 1. Install dependencies and package for your current platform
+npm install && npm run package:vscode
+# (Or package for all platforms: npm run package:vscode:all)
 
-# 2. Bundle and package the VS Code extension
-cd packages/vscode
-npm run build
-npx @vscode/vsce package --no-dependencies --skip-license
-
-# 3. Install in VS Code
-code --install-extension bdf-preview-0.1.8.vsix
+# 2. Install in VS Code (example for Linux x64)
+code --install-extension packages/vscode/bdf-preview-linux-x64-0.1.8.vsix
 ```
 
 ## Layout

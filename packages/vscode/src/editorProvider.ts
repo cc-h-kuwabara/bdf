@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { BdfConverter, PasswordRequiredError } from './converter.js';
-import { getThemeForExtension, setThemeForExtension } from './associationManager.js';
+import { BdfConverter } from './converter.js';
 import { getWebviewContent } from './html.js';
-import type { HostToWebviewMessage, WebviewToHostMessage } from './types.js';
+import { PreviewController } from './previewController.js';
 
 class BdfDocument implements vscode.CustomDocument {
   private readonly _onDidDispose = new vscode.EventEmitter<void>();
@@ -76,132 +75,12 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
     const fileName = path.basename(document.uri.fsPath);
     webview.html = getWebviewContent(webview, this.context.extensionUri, fileName);
 
-    let currentPassword: string | undefined = undefined;
-
-    const postToWebview = (msg: HostToWebviewMessage) => {
-      webview.postMessage(msg);
-    };
-
-    const loadAndSendDocument = async (retryPassword = false) => {
-      postToWebview({
-        type: 'loading',
-        filename: fileName,
-        message: `Converting and loading ${fileName}...`
-      });
-
-      try {
-        const result = await this.converter.loadOrConvert(document.uri, currentPassword, token);
-        const cfg = vscode.workspace.getConfiguration('bdf');
-        const theme = getThemeForExtension(document.uri.fsPath);
-        if (result.kind === 'text') {
-          postToWebview({
-            type: 'openText',
-            content: result.content,
-            filename: fileName,
-            theme: 'auto',
-            truncated: result.truncated,
-            isBinary: result.isBinary,
-            totalBytes: result.totalBytes,
-            shownBytes: result.shownBytes
-          });
-        } else {
-          const bdfBytes = result.data;
-          const defaultLayout = cfg.get<string>('defaultLayout', 'single');
-          const defaultZoom = cfg.get<number>('defaultZoom', 1.0);
-          postToWebview({
-            type: 'open',
-            buffer: bdfBytes.buffer.slice(bdfBytes.byteOffset, bdfBytes.byteOffset + bdfBytes.byteLength),
-            filename: fileName,
-            theme,
-            defaultLayout,
-            defaultZoom
-          });
-        }
-        if (webviewPanel.active) {
-          postToWebview({ type: 'focus' });
-        }
-      } catch (err: any) {
-        if (err instanceof PasswordRequiredError || err.name === 'PasswordRequiredError') {
-          const prompt = retryPassword
-            ? 'Incorrect password. Please try again:'
-            : 'This file is password-protected. Please enter the password:';
-
-          const input = await vscode.window.showInputBox({
-            prompt,
-            password: true,
-            ignoreFocusOut: true
-          });
-
-          if (input !== undefined) {
-            currentPassword = input;
-            await loadAndSendDocument(true);
-            return;
-          }
-        }
-
-        postToWebview({
-          type: 'error',
-          message: err.message || String(err)
-        });
-      }
-    };
-
-    const messageSub = webview.onDidReceiveMessage(async (msg: WebviewToHostMessage) => {
-      switch (msg.type) {
-        case 'ready':
-          await loadAndSendDocument();
-          break;
-        case 'error':
-          vscode.window.showErrorMessage(`BDF Preview Error: ${msg.message}`);
-          break;
-        case 'themeChanged': {
-          await setThemeForExtension(document.uri.fsPath, msg.theme);
-          break;
-        }
-        case 'requestPassword': {
-          const input = await vscode.window.showInputBox({
-            prompt: 'Please enter the document password:',
-            password: true,
-            ignoreFocusOut: true
-          });
-          if (input !== undefined) {
-            currentPassword = input;
-            await loadAndSendDocument(true);
-          }
-          break;
-        }
-        case 'close':
-          webviewPanel.dispose();
-          break;
-      }
-    });
-
-    // ファイルが保存・変更されたらプレビューを再生成
-    const changeSub = document.onDidChange(async () => {
-      await loadAndSendDocument();
-    });
-
-    // 設定 bdf.theme.<category>.<ext> が変更されたらWebviewへ即座に反映
-    const configSub = vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('bdf.theme')) {
-        const theme = getThemeForExtension(document.uri.fsPath);
-        postToWebview({ type: 'setTheme', theme });
-      }
-    });
-
-    // エディタタブがアクティブになったときに Webview へフォーカスを通知
-    const viewStateSub = webviewPanel.onDidChangeViewState((e) => {
-      if (e.webviewPanel.active) {
-        postToWebview({ type: 'focus' });
-      }
-    });
+    const controller = new PreviewController(webviewPanel, document.uri, this.converter, token);
+    const changeSub = document.onDidChange(() => controller.loadAndSend());
 
     webviewPanel.onDidDispose(() => {
-      messageSub.dispose();
       changeSub.dispose();
-      configSub.dispose();
-      viewStateSub.dispose();
+      controller.dispose();
     });
   }
 }
-

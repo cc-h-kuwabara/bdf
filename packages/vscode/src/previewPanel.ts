@@ -1,27 +1,25 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { BdfConverter, PasswordRequiredError } from './converter.js';
-import { getThemeForExtension, setThemeForExtension } from './associationManager.js';
+import { BdfConverter } from './converter.js';
 import { getWebviewContent } from './html.js';
-import type { HostToWebviewMessage, WebviewToHostMessage } from './types.js';
+import { PreviewController } from './previewController.js';
 
 export class BdfPreviewPanel {
   public static readonly viewType = 'bdf.previewPanel';
   private static panels = new Map<string, BdfPreviewPanel>();
 
   private readonly panel: vscode.WebviewPanel;
-  private readonly converter: BdfConverter;
+  private readonly controller: PreviewController;
   private readonly disposables: vscode.Disposable[] = [];
-  private currentPassword?: string;
 
   private constructor(
-    private readonly context: vscode.ExtensionContext,
+    context: vscode.ExtensionContext,
     private readonly uri: vscode.Uri,
     viewColumn: vscode.ViewColumn
   ) {
-    this.converter = new BdfConverter(context);
-
+    const converter = new BdfConverter(context);
     const fileName = path.basename(uri.fsPath);
+
     this.panel = vscode.window.createWebviewPanel(
       BdfPreviewPanel.viewType,
       `Preview: ${fileName}`,
@@ -37,54 +35,16 @@ export class BdfPreviewPanel {
 
     this.panel.webview.html = getWebviewContent(this.panel.webview, context.extensionUri, fileName);
 
-    this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
+    this.controller = new PreviewController(this.panel, uri, converter);
+    this.disposables.push(this.controller);
 
-    this.panel.webview.onDidReceiveMessage(
-      async (msg: WebviewToHostMessage) => {
-        switch (msg.type) {
-          case 'ready':
-            await this.loadAndSend();
-            break;
-          case 'error':
-            vscode.window.showErrorMessage(`BDF Preview Error: ${msg.message}`);
-            break;
-          case 'themeChanged':
-            await setThemeForExtension(this.uri.fsPath, msg.theme);
-            break;
-          case 'close':
-            this.panel.dispose();
-            break;
-        }
-      },
-      null,
-      this.disposables
-    );
-
-    const configSub = vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('bdf.theme')) {
-        const theme = getThemeForExtension(this.uri.fsPath);
-        this.panel.webview.postMessage({ type: 'setTheme', theme } satisfies HostToWebviewMessage);
-      }
-    });
-    this.disposables.push(configSub);
-
-    // ファイル変更監視
     const watcher = vscode.workspace.createFileSystemWatcher(
       new vscode.RelativePattern(path.dirname(uri.fsPath), path.basename(uri.fsPath))
     );
-    watcher.onDidChange(() => this.loadAndSend(), null, this.disposables);
+    watcher.onDidChange(() => this.controller.loadAndSend(), null, this.disposables);
     this.disposables.push(watcher);
 
-    // パネルがアクティブになったときに Webview へフォーカスを通知
-    this.panel.onDidChangeViewState(
-      (e) => {
-        if (e.webviewPanel.active) {
-          this.panel.webview.postMessage({ type: 'focus' } satisfies HostToWebviewMessage);
-        }
-      },
-      null,
-      this.disposables
-    );
+    this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
   }
 
   public static createOrShow(
@@ -96,7 +56,7 @@ export class BdfPreviewPanel {
     const existing = BdfPreviewPanel.panels.get(key);
     if (existing) {
       existing.panel.reveal(viewColumn);
-      existing.panel.webview.postMessage({ type: 'focus' } satisfies HostToWebviewMessage);
+      existing.controller.post({ type: 'focus' });
       return existing;
     }
 
@@ -105,80 +65,10 @@ export class BdfPreviewPanel {
     return panel;
   }
 
-  private async loadAndSend(retryPassword = false) {
-    const fileName = path.basename(this.uri.fsPath);
-    const postToWebview = (msg: HostToWebviewMessage) => this.panel.webview.postMessage(msg);
-
-    postToWebview({
-      type: 'loading',
-      filename: fileName,
-      message: `Converting and loading ${fileName}...`
-    });
-
-    try {
-      const result = await this.converter.loadOrConvert(this.uri, this.currentPassword);
-      const cfg = vscode.workspace.getConfiguration('bdf');
-      const theme = getThemeForExtension(this.uri.fsPath);
-      if (result.kind === 'text') {
-        postToWebview({
-          type: 'openText',
-          content: result.content,
-          filename: fileName,
-          theme: 'auto',
-          truncated: result.truncated,
-          isBinary: result.isBinary,
-          totalBytes: result.totalBytes,
-          shownBytes: result.shownBytes
-        });
-      } else {
-        const bdfBytes = result.data;
-        const defaultLayout = cfg.get<string>('defaultLayout', 'single');
-        const defaultZoom = cfg.get<number>('defaultZoom', 1.0);
-        postToWebview({
-          type: 'open',
-          buffer: bdfBytes.buffer.slice(bdfBytes.byteOffset, bdfBytes.byteOffset + bdfBytes.byteLength),
-          filename: fileName,
-          theme,
-          defaultLayout,
-          defaultZoom
-        });
-      }
-      if (this.panel.active) {
-        postToWebview({ type: 'focus' });
-      }
-    } catch (err: any) {
-      if (err instanceof PasswordRequiredError || err.name === 'PasswordRequiredError') {
-        const prompt = retryPassword
-          ? 'Incorrect password. Please try again:'
-          : 'This file is password-protected. Please enter the password:';
-
-        const input = await vscode.window.showInputBox({
-          prompt,
-          password: true,
-          ignoreFocusOut: true
-        });
-
-        if (input !== undefined) {
-          this.currentPassword = input;
-          await this.loadAndSend(true);
-          return;
-        }
-      }
-
-      postToWebview({
-        type: 'error',
-        message: err.message || String(err)
-      });
-    }
-  }
-
-  private dispose() {
+  public dispose(): void {
     BdfPreviewPanel.panels.delete(this.uri.toString());
-    this.panel.dispose();
-    while (this.disposables.length) {
-      const d = this.disposables.pop();
-      if (d) d.dispose();
+    while (this.disposables.length > 0) {
+      this.disposables.pop()?.dispose();
     }
   }
 }
-

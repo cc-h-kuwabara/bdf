@@ -19,5 +19,8 @@ Preview 140 file extensions—including Office documents, PDF, CAD drawings, PCB
   - Drag-select and copy (`Ctrl+C` / `Cmd+C`) text and spreadsheet cells directly from the Canvas 2D preview.
 - **Full Viewer Controls**:
   - Page navigation, zoom (`Fit Width`, `50%`–`300%`), layout modes (`Single Page`, `Two-Page Spread`, `Continuous`), multi-sheet/view switcher, and full-text search (`Ctrl+F` / `Cmd+F`).
+  - Automatic keyboard focus on open and press `Esc` to close the preview.
+- **Plain Text & Binary Hex Dump Fallback**:
+  - Unsupported files automatically fall back to a plain-text preview (with `auto` VS Code theme) or a `hexdump -C` style hex dump for binary files.
 - **Per-Extension File Associations & Theme Settings**:
   - Configure automatic preview (`bdf.preview.<category>.<ext>`) and preview theme (`bdf.theme.<category>.<ext>`: `auto`, `light`, or `dark`) individually for every file extension.

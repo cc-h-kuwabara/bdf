@@ -41,6 +41,17 @@ export class BdfConverter {
       path.join('dist', 'bin', process.platform === 'win32' ? 'bdf.exe' : 'bdf')
     );
     if (fs.existsSync(extBinary)) {
+      if (process.platform !== 'win32') {
+        try {
+          fs.accessSync(extBinary, fs.constants.X_OK);
+        } catch {
+          try {
+            fs.chmodSync(extBinary, 0o755);
+          } catch {
+            // 権限変更に失敗した場合はそのまま実行を試みる
+          }
+        }
+      }
       return { command: extBinary, args: [] };
     }
 
@@ -287,42 +298,43 @@ export class BdfConverter {
   }
 }
 
+const HEX_TABLE = Array.from({ length: 256 }, (_, i) => i.toString(16).padStart(2, '0'));
+const ASCII_TABLE = Array.from({ length: 256 }, (_, i) =>
+  i >= 0x20 && i <= 0x7e ? String.fromCharCode(i) : '.'
+);
+
 /**
  * バイト列を hexdump -C 形式の文字列に変換する
  */
 function formatHexDump(bytes: Uint8Array): string {
-  const lines: string[] = [];
   const total = bytes.byteLength;
   if (total === 0) {
     return '(empty file)';
   }
 
-  for (let offset = 0; offset < total; offset += 16) {
+  const lineCount = Math.ceil(total / 16);
+  const lines = new Array<string>(lineCount);
+  const hexCols = new Array<string>(16);
+
+  for (let lineIdx = 0, offset = 0; offset < total; lineIdx++, offset += 16) {
     const addr = offset.toString(16).padStart(8, '0');
-    let hexLeft = '';
-    let hexRight = '';
+    const rowEnd = Math.min(offset + 16, total);
     let ascii = '';
 
     for (let i = 0; i < 16; i++) {
-      if (offset + i < total) {
-        const b = bytes[offset + i];
-        const hex = b.toString(16).padStart(2, '0');
-        if (i < 8) {
-          hexLeft += (i > 0 ? ' ' : '') + hex;
-        } else {
-          hexRight += (i > 8 ? ' ' : '') + hex;
-        }
-        ascii += b >= 0x20 && b <= 0x7e ? String.fromCharCode(b) : '.';
+      const idx = offset + i;
+      if (idx < rowEnd) {
+        const b = bytes[idx];
+        hexCols[i] = HEX_TABLE[b];
+        ascii += ASCII_TABLE[b];
       } else {
-        if (i < 8) {
-          hexLeft += (i > 0 ? ' ' : '') + '  ';
-        } else {
-          hexRight += (i > 8 ? ' ' : '') + '  ';
-        }
+        hexCols[i] = '  ';
       }
     }
 
-    lines.push(`${addr}  ${hexLeft}  ${hexRight}  |${ascii}|`);
+    const left = `${hexCols[0]} ${hexCols[1]} ${hexCols[2]} ${hexCols[3]} ${hexCols[4]} ${hexCols[5]} ${hexCols[6]} ${hexCols[7]}`;
+    const right = `${hexCols[8]} ${hexCols[9]} ${hexCols[10]} ${hexCols[11]} ${hexCols[12]} ${hexCols[13]} ${hexCols[14]} ${hexCols[15]}`;
+    lines[lineIdx] = `${addr}  ${left}  ${right}  |${ascii}|`;
   }
 
   return lines.join('\n');
