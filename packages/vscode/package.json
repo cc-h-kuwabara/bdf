@@ -3,7 +3,7 @@
   "displayName": "BDF Document Preview",
   "description": "Preview documents, drawings, CAD, music, audio, fonts, and data (Office, PDF, CAD, KiCad, Gerber, etc.) with BDF in VS Code",
   "version": "0.1.8",
-  "publisher": "bdf",
+  "publisher": "epsilonsoft",
   "license": "MIT",
   "icon": "icon.png",
   "repository": {
