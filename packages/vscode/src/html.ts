@@ -28,7 +28,7 @@ export function getWebviewContent(
 </head>
 <body>
   <div id="app-container">
-    <div id="toolbar">
+    <div id="toolbar" class="hidden">
       <!-- Page navigation -->
       <div class="toolbar-group">
         <button id="btn-prev" class="toolbar-btn" title="Previous Page" disabled>◀</button>
@@ -89,15 +89,26 @@ export function getWebviewContent(
         </select>
       </div>
 
-      <!-- Find -->
+      <!-- Find & Collapse -->
       <div class="toolbar-group" style="margin-left: auto;">
         <button id="btn-find" class="toolbar-btn" title="Find in Document (Ctrl+F / Cmd+F)">🔍 Find</button>
+        <button id="btn-collapse-toolbar" class="toolbar-btn" title="Collapse Toolbar">▲</button>
       </div>
     </div>
+
+    <!-- Floating expand button when toolbar is collapsed -->
+    <button id="btn-expand-toolbar" class="toolbar-expand-btn hidden" title="Show Toolbar">▼</button>
 
     <!-- Viewer stage -->
     <div id="stage-container">
       <div id="viewer-host"></div>
+      <div id="text-find-bar" class="text-find-bar hidden" role="search">
+        <input id="text-find-input" type="search" placeholder="Find" aria-label="Find in text" />
+        <span id="text-find-count" class="text-find-count" role="status"></span>
+        <button id="text-find-prev" title="Previous Match (Shift+Enter)">▲</button>
+        <button id="text-find-next" title="Next Match (Enter)">▼</button>
+        <button id="text-find-close" title="Close (Escape)">✕</button>
+      </div>
       <div id="text-viewer" class="hidden" tabindex="-1">
         <div id="text-truncated-banner" class="text-banner hidden">File truncated (showing first 5 MiB)</div>
         <pre id="text-content"></pre>

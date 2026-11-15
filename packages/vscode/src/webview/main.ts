@@ -51,10 +51,19 @@ ${TEXT_LAYER_CSS}
 document.head.appendChild(textLayerStyle);
 
 // UI Elements
+const toolbarElement = document.getElementById('toolbar') as HTMLDivElement;
+const collapseToolbarBtn = document.getElementById('btn-collapse-toolbar') as HTMLButtonElement;
+const expandToolbarBtn = document.getElementById('btn-expand-toolbar') as HTMLButtonElement;
 const hostElement = document.getElementById('viewer-host') as HTMLDivElement;
 const textViewer = document.getElementById('text-viewer') as HTMLDivElement;
 const textTruncatedBanner = document.getElementById('text-truncated-banner') as HTMLDivElement;
 const textContent = document.getElementById('text-content') as HTMLPreElement;
+const textFindBar = document.getElementById('text-find-bar') as HTMLDivElement;
+const textFindInput = document.getElementById('text-find-input') as HTMLInputElement;
+const textFindCount = document.getElementById('text-find-count') as HTMLSpanElement;
+const textFindPrevBtn = document.getElementById('text-find-prev') as HTMLButtonElement;
+const textFindNextBtn = document.getElementById('text-find-next') as HTMLButtonElement;
+const textFindCloseBtn = document.getElementById('text-find-close') as HTMLButtonElement;
 const overlayElement = document.getElementById('overlay') as HTMLDivElement;
 const overlaySpinner = document.getElementById('overlay-spinner') as HTMLDivElement;
 const overlayMsg = document.getElementById('overlay-msg') as HTMLDivElement;
@@ -84,6 +93,9 @@ let currentPage = 0;
 let totalPages = 1;
 let currentThemeMode: PreviewThemeMode = 'light';
 let isTextMode = false;
+let rawTextContent = '';
+let textHits: HTMLElement[] = [];
+let textHitIndex = -1;
 
 /**
  * VS Code の body クラス (vscode-light / vscode-dark / vscode-high-contrast) から現在のエディタテーマを判定する
@@ -431,12 +443,132 @@ themeSelect.addEventListener('change', () => {
 });
 
 findBtn.addEventListener('click', () => {
+  if (isTextMode) {
+    openTextFind();
+    return;
+  }
   if (!viewer) return;
   viewer.openFind();
 });
 
+const MAX_TEXT_FIND_HITS = 5000;
+
+function selectTextHit(index: number) {
+  if (textHits.length === 0) return;
+  if (textHitIndex >= 0 && textHitIndex < textHits.length) {
+    textHits[textHitIndex].classList.remove('current');
+  }
+  textHitIndex = ((index % textHits.length) + textHits.length) % textHits.length;
+  const hit = textHits[textHitIndex];
+  hit.classList.add('current');
+  hit.scrollIntoView({ block: 'center', inline: 'nearest' });
+  textFindCount.textContent = `${textHitIndex + 1} / ${textHits.length}`;
+}
+
+function runTextFind(query: string) {
+  textHits = [];
+  textHitIndex = -1;
+  if (!query) {
+    textContent.textContent = rawTextContent;
+    textFindCount.textContent = '';
+    return;
+  }
+
+  const lowerSource = rawTextContent.toLowerCase();
+  const lowerQuery = query.toLowerCase();
+  const qLen = query.length;
+  const frag = document.createDocumentFragment();
+  let pos = 0;
+
+  while (pos < rawTextContent.length && textHits.length < MAX_TEXT_FIND_HITS) {
+    const idx = lowerSource.indexOf(lowerQuery, pos);
+    if (idx === -1) break;
+    if (idx > pos) {
+      frag.appendChild(document.createTextNode(rawTextContent.slice(pos, idx)));
+    }
+    const mark = document.createElement('mark');
+    mark.className = 'bdf-text-hit';
+    mark.textContent = rawTextContent.slice(idx, idx + qLen);
+    frag.appendChild(mark);
+    textHits.push(mark);
+    pos = idx + qLen;
+  }
+
+  if (pos < rawTextContent.length) {
+    frag.appendChild(document.createTextNode(rawTextContent.slice(pos)));
+  }
+
+  textContent.replaceChildren(frag);
+  if (textHits.length > 0) {
+    selectTextHit(0);
+  } else {
+    textFindCount.textContent = 'No results';
+  }
+}
+
+function openTextFind() {
+  textFindBar.classList.remove('hidden');
+  textFindInput.focus();
+  textFindInput.select();
+  if (textFindInput.value) {
+    runTextFind(textFindInput.value);
+  }
+}
+
+function closeTextFind() {
+  textFindBar.classList.add('hidden');
+  textHits = [];
+  textHitIndex = -1;
+  textFindCount.textContent = '';
+  if (isTextMode) {
+    textContent.textContent = rawTextContent;
+  }
+  focusViewer();
+}
+
+textFindInput.addEventListener('input', (e) => {
+  if (!(e as InputEvent).isComposing) {
+    runTextFind(textFindInput.value);
+  }
+});
+textFindInput.addEventListener('compositionend', () => {
+  runTextFind(textFindInput.value);
+});
+textFindPrevBtn.addEventListener('click', () => selectTextHit(textHitIndex - 1));
+textFindNextBtn.addEventListener('click', () => selectTextHit(textHitIndex + 1));
+textFindCloseBtn.addEventListener('click', () => closeTextFind());
+
+textFindBar.addEventListener('keydown', (e) => {
+  if (e.isComposing || e.keyCode === 229) return;
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    e.stopPropagation();
+    closeTextFind();
+  } else if (e.key === 'Enter' && e.target === textFindInput) {
+    e.preventDefault();
+    selectTextHit(textHitIndex + (e.shiftKey ? -1 : 1));
+  }
+});
+
+function setToolbarCollapsed(collapsed: boolean) {
+  toolbarElement.classList.toggle('hidden', collapsed);
+  expandToolbarBtn.classList.toggle('hidden', !collapsed);
+}
+
+collapseToolbarBtn.addEventListener('click', () => {
+  setToolbarCollapsed(true);
+  focusViewer();
+});
+
+expandToolbarBtn.addEventListener('click', () => {
+  setToolbarCollapsed(false);
+  focusViewer();
+});
+
 function setTextMode(enabled: boolean) {
   isTextMode = enabled;
+  setToolbarCollapsed(enabled);
+  findBtn.disabled = false;
   if (enabled) {
     hostElement.classList.add('hidden');
     textViewer.classList.remove('hidden');
@@ -448,13 +580,12 @@ function setTextMode(enabled: boolean) {
     fitWidthBtn.disabled = true;
     layoutSelect.disabled = true;
     viewSelect.disabled = true;
-    findBtn.disabled = true;
   } else {
+    textFindBar.classList.add('hidden');
     textViewer.classList.add('hidden');
     hostElement.classList.remove('hidden');
     fitWidthBtn.disabled = false;
     layoutSelect.disabled = false;
-    findBtn.disabled = false;
   }
 }
 
@@ -512,7 +643,15 @@ window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessa
         applyEffectiveTheme();
       }
       setTextMode(true);
-      textContent.textContent = msg.content;
+      rawTextContent = msg.content;
+      textContent.textContent = rawTextContent;
+      if (!textFindBar.classList.contains('hidden') && textFindInput.value) {
+        runTextFind(textFindInput.value);
+      } else {
+        textHits = [];
+        textHitIndex = -1;
+        textFindCount.textContent = '';
+      }
       if (msg.isBinary) {
         textTruncatedBanner.textContent = msg.truncated
           ? `Binary file — Hex dump of first ${formatBytes(msg.shownBytes)} (total: ${formatBytes(msg.totalBytes)})`
@@ -562,9 +701,14 @@ window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessa
   }
 });
 
-// ESC キーが押されたらプレビューをクローズ
+// キーボードショートカット (Ctrl+F / Cmd+F で検索、ESC でプレビュークローズ)
 window.addEventListener('keydown', (e) => {
   if (e.isComposing) return;
+  if (isTextMode && (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'f') {
+    e.preventDefault();
+    openTextFind();
+    return;
+  }
   if (e.key === 'Escape') {
     e.preventDefault();
     vscode.postMessage({ type: 'close' });
