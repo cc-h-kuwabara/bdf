@@ -53,6 +53,9 @@ document.head.appendChild(textLayerStyle);
 
 // UI Elements
 const hostElement = document.getElementById('viewer-host') as HTMLDivElement;
+const textViewer = document.getElementById('text-viewer') as HTMLDivElement;
+const textTruncatedBanner = document.getElementById('text-truncated-banner') as HTMLDivElement;
+const textContent = document.getElementById('text-content') as HTMLPreElement;
 const overlayElement = document.getElementById('overlay') as HTMLDivElement;
 const overlaySpinner = document.getElementById('overlay-spinner') as HTMLDivElement;
 const overlayMsg = document.getElementById('overlay-msg') as HTMLDivElement;
@@ -81,6 +84,7 @@ let currentZoom = 1.0;
 let currentPage = 0;
 let totalPages = 1;
 let currentThemeMode: PreviewThemeMode = 'light';
+let isTextMode = false;
 
 /**
  * VS Code の body クラス (vscode-light / vscode-dark / vscode-high-contrast) から現在のエディタテーマを判定する
@@ -317,9 +321,13 @@ function updateViewsAndPages() {
 }
 
 function setZoom(zoom: number) {
-  if (!viewer) return;
   currentZoom = Math.max(0.2, Math.min(5.0, zoom));
-  viewer.setZoom(currentZoom);
+  if (isTextMode) {
+    textViewer.style.setProperty('--bdf-text-font-size', `${Math.round(13 * currentZoom)}px`);
+  } else {
+    if (!viewer) return;
+    viewer.setZoom(currentZoom);
+  }
 
   const pct = Math.round(currentZoom * 100);
   let matched = false;
@@ -428,10 +436,63 @@ findBtn.addEventListener('click', () => {
   viewer.openFind();
 });
 
+function setTextMode(enabled: boolean) {
+  isTextMode = enabled;
+  if (enabled) {
+    hostElement.classList.add('hidden');
+    textViewer.classList.remove('hidden');
+    prevPageBtn.disabled = true;
+    nextPageBtn.disabled = true;
+    pageInput.disabled = true;
+    pageInput.value = '1';
+    pageTotal.textContent = '/ 1';
+    fitWidthBtn.disabled = true;
+    layoutSelect.disabled = true;
+    viewSelect.disabled = true;
+    findBtn.disabled = true;
+  } else {
+    textViewer.classList.add('hidden');
+    hostElement.classList.remove('hidden');
+    fitWidthBtn.disabled = false;
+    layoutSelect.disabled = false;
+    findBtn.disabled = false;
+  }
+}
+
+function updateThemeLabel(filename?: string) {
+  if (filename && themeLabel) {
+    const dotIdx = filename.lastIndexOf('.');
+    const extText = dotIdx >= 0 ? filename.slice(dotIdx).toLowerCase() : '';
+    themeLabel.textContent = extText ? `Theme (${extText}):` : 'Theme:';
+  }
+}
+
+function focusViewer() {
+  window.focus();
+  const target = isTextMode ? textViewer : (viewer?.stage ?? hostElement);
+  if (target) {
+    if (!target.hasAttribute('tabindex')) {
+      target.tabIndex = -1;
+    }
+    target.focus({ preventScroll: true });
+  }
+}
+
+function formatBytes(bytes?: number): string {
+  if (bytes === undefined) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
+}
+
 // Message handler
 window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessage>) => {
   const msg = event.data;
   switch (msg.type) {
+    case 'focus': {
+      focusViewer();
+      break;
+    }
     case 'loading': {
       showLoading(msg.message || `Converting ${msg.filename}...`);
       break;
@@ -445,17 +506,39 @@ window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessa
       applyEffectiveTheme();
       break;
     }
+    case 'openText': {
+      updateThemeLabel(msg.filename);
+      if (msg.theme) {
+        currentThemeMode = msg.theme;
+        applyEffectiveTheme();
+      }
+      setTextMode(true);
+      textContent.textContent = msg.content;
+      if (msg.isBinary) {
+        textTruncatedBanner.textContent = msg.truncated
+          ? `Binary file — Hex dump of first ${formatBytes(msg.shownBytes)} (total: ${formatBytes(msg.totalBytes)})`
+          : `Binary file — Hex dump (${formatBytes(msg.totalBytes)})`;
+        textTruncatedBanner.classList.remove('hidden');
+      } else if (msg.truncated) {
+        textTruncatedBanner.textContent = 'File truncated (showing first 5 MiB)';
+        textTruncatedBanner.classList.remove('hidden');
+      } else {
+        textTruncatedBanner.classList.add('hidden');
+      }
+      textViewer.scrollTop = 0;
+      textViewer.scrollLeft = 0;
+      hideOverlay();
+      focusViewer();
+      break;
+    }
     case 'open': {
       try {
-        if (msg.filename && themeLabel) {
-          const dotIdx = msg.filename.lastIndexOf('.');
-          const extText = dotIdx >= 0 ? msg.filename.slice(dotIdx).toLowerCase() : '';
-          themeLabel.textContent = extText ? `Theme (${extText}):` : 'Theme:';
-        }
+        updateThemeLabel(msg.filename);
         if (msg.theme) {
           currentThemeMode = msg.theme;
           applyEffectiveTheme();
         }
+        setTextMode(false);
         showLoading('Preparing document view...');
         const v = await initViewer();
         if (msg.defaultLayout && ['single', 'spread', 'continuous'].includes(msg.defaultLayout)) {
@@ -470,12 +553,22 @@ window.addEventListener('message', async (event: MessageEvent<HostToWebviewMessa
         pageInput.value = '1';
         updateViewsAndPages();
         hideOverlay();
+        focusViewer();
         setTimeout(attachTextLayers, 150);
       } catch (err: any) {
         showError(`Failed to preview file: ${err.message || String(err)}`);
       }
       break;
     }
+  }
+});
+
+// ESC キーが押されたらプレビューをクローズ
+window.addEventListener('keydown', (e) => {
+  if (e.isComposing) return;
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    vscode.postMessage({ type: 'close' });
   }
 });
 

@@ -138,12 +138,14 @@ html, body {
 #viewer-host {
   width: 100%;
   height: 100%;
+  outline: none;
 }
 
 /* @bdfkit/viewer のステージ背景を VS Code テーマに追従させる */
 #viewer-host [role="region"] {
   background-color: var(--bdf-stage-bg) !important;
   padding: 16px 0;
+  outline: none;
 }
 
 body[data-bdf-view-kind="sheet"] #viewer-host [role="region"] {
@@ -307,6 +309,43 @@ body[data-bdf-effective-theme="dark"][data-bdf-view-kind="sheet"] #viewer-host [
   word-break: break-word;
   margin-bottom: 12px;
   text-align: left;
+}
+
+/* Plain text fallback viewer */
+#text-viewer {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  outline: none;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #1e1e1e;
+}
+
+body[data-bdf-effective-theme="dark"] #text-viewer {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.text-banner {
+  padding: 6px 16px;
+  font-size: 12px;
+  background-color: var(--vscode-editorInfo-background, rgba(0, 127, 212, 0.12));
+  border-bottom: 1px solid var(--bdf-border);
+  color: var(--bdf-fg);
+}
+
+#text-content {
+  margin: 0;
+  padding: 16px 24px;
+  font-family: var(--vscode-editor-font-family, 'Consolas', 'Courier New', monospace);
+  font-size: var(--bdf-text-font-size, var(--vscode-editor-font-size, 13px));
+  line-height: 1.5;
+  tab-size: 4;
+  white-space: pre;
+  user-select: text;
+  -webkit-user-select: text;
+  cursor: text;
 }
 
 .hidden {

@@ -90,19 +90,36 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
       });
 
       try {
-        const bdfBytes = await this.converter.loadOrConvert(document.uri, currentPassword, token);
+        const result = await this.converter.loadOrConvert(document.uri, currentPassword, token);
         const cfg = vscode.workspace.getConfiguration('bdf');
         const theme = getThemeForExtension(document.uri.fsPath);
-        const defaultLayout = cfg.get<string>('defaultLayout', 'single');
-        const defaultZoom = cfg.get<number>('defaultZoom', 1.0);
-        postToWebview({
-          type: 'open',
-          buffer: bdfBytes.buffer.slice(bdfBytes.byteOffset, bdfBytes.byteOffset + bdfBytes.byteLength),
-          filename: fileName,
-          theme,
-          defaultLayout,
-          defaultZoom
-        });
+        if (result.kind === 'text') {
+          postToWebview({
+            type: 'openText',
+            content: result.content,
+            filename: fileName,
+            theme: 'auto',
+            truncated: result.truncated,
+            isBinary: result.isBinary,
+            totalBytes: result.totalBytes,
+            shownBytes: result.shownBytes
+          });
+        } else {
+          const bdfBytes = result.data;
+          const defaultLayout = cfg.get<string>('defaultLayout', 'single');
+          const defaultZoom = cfg.get<number>('defaultZoom', 1.0);
+          postToWebview({
+            type: 'open',
+            buffer: bdfBytes.buffer.slice(bdfBytes.byteOffset, bdfBytes.byteOffset + bdfBytes.byteLength),
+            filename: fileName,
+            theme,
+            defaultLayout,
+            defaultZoom
+          });
+        }
+        if (webviewPanel.active) {
+          postToWebview({ type: 'focus' });
+        }
       } catch (err: any) {
         if (err instanceof PasswordRequiredError || err.name === 'PasswordRequiredError') {
           const prompt = retryPassword
@@ -153,6 +170,9 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
           }
           break;
         }
+        case 'close':
+          webviewPanel.dispose();
+          break;
       }
     });
 
@@ -169,10 +189,18 @@ export class BdfCustomEditorProvider implements vscode.CustomReadonlyEditorProvi
       }
     });
 
+    // エディタタブがアクティブになったときに Webview へフォーカスを通知
+    const viewStateSub = webviewPanel.onDidChangeViewState((e) => {
+      if (e.webviewPanel.active) {
+        postToWebview({ type: 'focus' });
+      }
+    });
+
     webviewPanel.onDidDispose(() => {
       messageSub.dispose();
       changeSub.dispose();
       configSub.dispose();
+      viewStateSub.dispose();
     });
   }
 }

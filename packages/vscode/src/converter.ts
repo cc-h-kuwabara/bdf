@@ -7,6 +7,20 @@ import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
 
+const MAX_TEXT_PREVIEW_BYTES = 5 * 1024 * 1024; // 5 MiB
+const MAX_HEX_DUMP_BYTES = 128 * 1024; // 128 KiB
+
+export type LoadResult =
+  | { kind: 'bdf'; data: Uint8Array }
+  | {
+      kind: 'text';
+      content: string;
+      truncated: boolean;
+      isBinary?: boolean;
+      totalBytes?: number;
+      shownBytes?: number;
+    };
+
 export class BdfConverter {
   private static binaryPathCache: string | null = null;
 
@@ -87,20 +101,20 @@ export class BdfConverter {
   }
 
   /**
-   * 対象ファイルを BDF バイナリ (Uint8Array) に変換または読み込む
+   * 対象ファイルを BDF バイナリまたはテキストフォールバックとして読み込む
    */
   public async loadOrConvert(
     fileUri: vscode.Uri,
     password?: string,
     token?: vscode.CancellationToken
-  ): Promise<Uint8Array> {
+  ): Promise<LoadResult> {
     const filePath = fileUri.fsPath;
     const ext = path.extname(filePath).toLowerCase();
 
     // 拡張子が .bdf の場合は直接読み込む
     if (ext === '.bdf') {
       const data = await vscode.workspace.fs.readFile(fileUri);
-      return data;
+      return { kind: 'bdf', data };
     }
 
     // 一時出力ファイルパスを生成
@@ -176,7 +190,19 @@ export class BdfConverter {
       }
 
       const buffer = await fs.promises.readFile(tempOutFile);
-      return new Uint8Array(buffer);
+      return { kind: 'bdf', data: new Uint8Array(buffer) };
+    } catch (err) {
+      if (err instanceof PasswordRequiredError || err instanceof vscode.CancellationError) {
+        throw err;
+      }
+
+      // BDF で変換できない非対応形式の場合は、テキストまたはバイナリの16進数ダンプとして読み込む
+      const fallback = await this.tryReadFallback(fileUri);
+      if (fallback) {
+        return fallback;
+      }
+
+      throw err;
     } finally {
       // 一時ファイルのクリーンアップ
       try {
@@ -191,6 +217,115 @@ export class BdfConverter {
       }
     }
   }
+
+  /**
+   * ファイルをテキスト、またはバイナリ（16進数ダンプ）として読み込む
+   */
+  private async tryReadFallback(fileUri: vscode.Uri): Promise<LoadResult | null> {
+    try {
+      const rawBytes = await vscode.workspace.fs.readFile(fileUri);
+      const totalBytes = rawBytes.byteLength;
+
+      // 1. UTF-16 BOM チェック
+      if (totalBytes >= 2) {
+        const isUtf16Le = rawBytes[0] === 0xff && rawBytes[1] === 0xfe;
+        const isUtf16Be = rawBytes[0] === 0xfe && rawBytes[1] === 0xff;
+        if (isUtf16Le || isUtf16Be) {
+          const truncated = totalBytes > MAX_TEXT_PREVIEW_BYTES;
+          const slice = truncated ? rawBytes.subarray(0, MAX_TEXT_PREVIEW_BYTES) : rawBytes;
+          const content = new TextDecoder(isUtf16Le ? 'utf-16le' : 'utf-16be').decode(slice);
+          return { kind: 'text', content, truncated, isBinary: false, totalBytes };
+        }
+      }
+
+      // 2. バイナリ判定（NULLバイト・制御文字・UTF-8妥当性）
+      let isBinary = false;
+      const probeLen = Math.min(totalBytes, 8192);
+      let controlCount = 0;
+      for (let i = 0; i < probeLen; i++) {
+        const b = rawBytes[i];
+        if (b === 0) {
+          isBinary = true;
+          break;
+        }
+        // タブ(0x09), LF(0x0a), CR(0x0d) 以外の制御文字
+        if ((b < 0x20 && b !== 0x09 && b !== 0x0a && b !== 0x0d) || b === 0x7f) {
+          controlCount++;
+        }
+      }
+      if (!isBinary && probeLen > 0 && controlCount / probeLen > 0.05) {
+        isBinary = true;
+      }
+
+      if (!isBinary) {
+        try {
+          const truncated = totalBytes > MAX_TEXT_PREVIEW_BYTES;
+          const slice = truncated ? rawBytes.subarray(0, MAX_TEXT_PREVIEW_BYTES) : rawBytes;
+          const content = new TextDecoder('utf-8', { fatal: true }).decode(slice);
+          return { kind: 'text', content, truncated, isBinary: false, totalBytes };
+        } catch {
+          // UTF-8 として不正なバイト列が含まれる場合はバイナリとして扱う
+          isBinary = true;
+        }
+      }
+
+      // 3. バイナリファイルの場合は 16進数ダンプ（hexdump -C 形式）を生成
+      const truncated = totalBytes > MAX_HEX_DUMP_BYTES;
+      const slice = truncated ? rawBytes.subarray(0, MAX_HEX_DUMP_BYTES) : rawBytes;
+      const content = formatHexDump(slice);
+      return {
+        kind: 'text',
+        content,
+        truncated,
+        isBinary: true,
+        totalBytes,
+        shownBytes: slice.byteLength
+      };
+    } catch {
+      return null;
+    }
+  }
+}
+
+/**
+ * バイト列を hexdump -C 形式の文字列に変換する
+ */
+function formatHexDump(bytes: Uint8Array): string {
+  const lines: string[] = [];
+  const total = bytes.byteLength;
+  if (total === 0) {
+    return '(empty file)';
+  }
+
+  for (let offset = 0; offset < total; offset += 16) {
+    const addr = offset.toString(16).padStart(8, '0');
+    let hexLeft = '';
+    let hexRight = '';
+    let ascii = '';
+
+    for (let i = 0; i < 16; i++) {
+      if (offset + i < total) {
+        const b = bytes[offset + i];
+        const hex = b.toString(16).padStart(2, '0');
+        if (i < 8) {
+          hexLeft += (i > 0 ? ' ' : '') + hex;
+        } else {
+          hexRight += (i > 8 ? ' ' : '') + hex;
+        }
+        ascii += b >= 0x20 && b <= 0x7e ? String.fromCharCode(b) : '.';
+      } else {
+        if (i < 8) {
+          hexLeft += (i > 0 ? ' ' : '') + '  ';
+        } else {
+          hexRight += (i > 8 ? ' ' : '') + '  ';
+        }
+      }
+    }
+
+    lines.push(`${addr}  ${hexLeft}  ${hexRight}  |${ascii}|`);
+  }
+
+  return lines.join('\n');
 }
 
 export class PasswordRequiredError extends Error {

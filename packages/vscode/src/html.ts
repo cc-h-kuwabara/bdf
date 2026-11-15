@@ -98,6 +98,10 @@ export function getWebviewContent(
     <!-- Viewer stage -->
     <div id="stage-container">
       <div id="viewer-host"></div>
+      <div id="text-viewer" class="hidden" tabindex="-1">
+        <div id="text-truncated-banner" class="text-banner hidden">File truncated (showing first 5 MiB)</div>
+        <pre id="text-content"></pre>
+      </div>
     </div>
 
     <!-- Loading / Error overlay -->

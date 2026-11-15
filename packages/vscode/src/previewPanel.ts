@@ -51,6 +51,9 @@ export class BdfPreviewPanel {
           case 'themeChanged':
             await setThemeForExtension(this.uri.fsPath, msg.theme);
             break;
+          case 'close':
+            this.panel.dispose();
+            break;
         }
       },
       null,
@@ -71,6 +74,17 @@ export class BdfPreviewPanel {
     );
     watcher.onDidChange(() => this.loadAndSend(), null, this.disposables);
     this.disposables.push(watcher);
+
+    // パネルがアクティブになったときに Webview へフォーカスを通知
+    this.panel.onDidChangeViewState(
+      (e) => {
+        if (e.webviewPanel.active) {
+          this.panel.webview.postMessage({ type: 'focus' } satisfies HostToWebviewMessage);
+        }
+      },
+      null,
+      this.disposables
+    );
   }
 
   public static createOrShow(
@@ -82,6 +96,7 @@ export class BdfPreviewPanel {
     const existing = BdfPreviewPanel.panels.get(key);
     if (existing) {
       existing.panel.reveal(viewColumn);
+      existing.panel.webview.postMessage({ type: 'focus' } satisfies HostToWebviewMessage);
       return existing;
     }
 
@@ -101,19 +116,36 @@ export class BdfPreviewPanel {
     });
 
     try {
-      const bdfBytes = await this.converter.loadOrConvert(this.uri, this.currentPassword);
+      const result = await this.converter.loadOrConvert(this.uri, this.currentPassword);
       const cfg = vscode.workspace.getConfiguration('bdf');
       const theme = getThemeForExtension(this.uri.fsPath);
-      const defaultLayout = cfg.get<string>('defaultLayout', 'single');
-      const defaultZoom = cfg.get<number>('defaultZoom', 1.0);
-      postToWebview({
-        type: 'open',
-        buffer: bdfBytes.buffer.slice(bdfBytes.byteOffset, bdfBytes.byteOffset + bdfBytes.byteLength),
-        filename: fileName,
-        theme,
-        defaultLayout,
-        defaultZoom
-      });
+      if (result.kind === 'text') {
+        postToWebview({
+          type: 'openText',
+          content: result.content,
+          filename: fileName,
+          theme: 'auto',
+          truncated: result.truncated,
+          isBinary: result.isBinary,
+          totalBytes: result.totalBytes,
+          shownBytes: result.shownBytes
+        });
+      } else {
+        const bdfBytes = result.data;
+        const defaultLayout = cfg.get<string>('defaultLayout', 'single');
+        const defaultZoom = cfg.get<number>('defaultZoom', 1.0);
+        postToWebview({
+          type: 'open',
+          buffer: bdfBytes.buffer.slice(bdfBytes.byteOffset, bdfBytes.byteOffset + bdfBytes.byteLength),
+          filename: fileName,
+          theme,
+          defaultLayout,
+          defaultZoom
+        });
+      }
+      if (this.panel.active) {
+        postToWebview({ type: 'focus' });
+      }
     } catch (err: any) {
       if (err instanceof PasswordRequiredError || err.name === 'PasswordRequiredError') {
         const prompt = retryPassword
